@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"name": "Project: Transforms",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/*.pyc": true,
+			"**/__pycache__/": true
+		}
+	},
+}
