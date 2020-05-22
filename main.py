@@ -24,7 +24,6 @@ if __name__ == "__main__":
 
     np.apply_along_axis(Affine.shear(0.5, 0), 1, square_a)
     np.apply_along_axis(Affine.shear(0, 0.5), 1, square_a)
-    ax.add_patch(patches.Polygon(square_a, **Style.blue))
 
     A = np.array([
         [1, 0.5],
@@ -37,6 +36,14 @@ if __name__ == "__main__":
     C = np.dot(A, B)
 
     np.apply_along_axis(Utility.transform(C), 1, square_b)
+
+    ax.add_patch(patches.Polygon(square_a, **Style.blue))
     ax.add_patch(patches.Polygon(square_b, **Style.red))
+
+    square_c = square()
+
+    np.apply_along_axis(Affine.shear(1, 0), 1, square_c)
+
+    ax.add_patch(patches.Polygon(square_c, **Style.green))
 
     pyplot.show()
