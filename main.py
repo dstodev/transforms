@@ -1,29 +1,29 @@
 import numpy as np
 from matplotlib import image, patches, pyplot
 
-from src.affine import Affine
-from src.utility import Style, Utility
+import src.affine as affine
+import src.style as style
+import src.utility as utility
 
 
-def square():
+def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
+    offset = scale / 2
+
     return np.array([
-        [0, 0],
-        [0, 1],
-        [1, 1],
-        [1, 0]
+        [center_x - offset, center_y - offset],  # Bottom left
+        [center_x - offset, center_y + offset],  # Top left
+        [center_x + offset, center_y + offset],  # Top right
+        [center_x + offset, center_y - offset]   # Bottom right
     ], dtype=float)
 
 
 if __name__ == "__main__":
     fig, ax = pyplot.subplots(figsize=(5, 5))
-    ax.set_xlim(-1, 2)
-    ax.set_ylim(-1, 2)
+    ax.set_xlim(-1, 3)
+    ax.set_ylim(-1, 3)
 
-    square_a = square()
-    square_b = square()
-
-    np.apply_along_axis(Affine.shear(0.5, 0), 1, square_a)
-    np.apply_along_axis(Affine.shear(0, 0.5), 1, square_a)
+    origin_x = 0.5
+    origin_y = 0.5
 
     A = np.array([
         [1, 0.5],
@@ -35,15 +35,17 @@ if __name__ == "__main__":
     ])
     C = np.dot(A, B)
 
-    np.apply_along_axis(Utility.transform(C), 1, square_b)
+    square_a = square(origin_x, origin_y)
+    square_b = square(origin_x, origin_y)
+    square_c = square(origin_x, origin_y)
 
-    ax.add_patch(patches.Polygon(square_a, **Style.blue))
-    ax.add_patch(patches.Polygon(square_b, **Style.red))
+    np.apply_along_axis(affine.shear(0.5, 0), 1, square_a)
+    np.apply_along_axis(affine.shear(0, 0.5), 1, square_a)
+    np.apply_along_axis(utility.transform(C), 1, square_b)
+    np.apply_along_axis(affine.shear(1, 0), 1, square_c)
 
-    square_c = square()
-
-    np.apply_along_axis(Affine.shear(1, 0), 1, square_c)
-
-    ax.add_patch(patches.Polygon(square_c, **Style.green))
+    ax.add_patch(patches.Polygon(square_a, **style.blue))
+    ax.add_patch(patches.Polygon(square_b, **style.red))
+    ax.add_patch(patches.Polygon(square_c, **style.green))
 
     pyplot.show()
