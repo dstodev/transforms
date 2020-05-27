@@ -19,6 +19,7 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
 
 if __name__ == "__main__":
     fig, ax = pyplot.subplots(figsize=(5, 5))
+    pyplot.grid(alpha=0.15, linestyle="--")
     ax.set_xlim(-0.5, 2.5)
     ax.set_ylim(-0.5, 2.5)
 
@@ -40,8 +41,9 @@ if __name__ == "__main__":
     green = square(origin_x, origin_y)
     blue = square(origin_x, origin_y)
 
-    np.apply_along_axis(utility.transform(C), 1, red)
-    np.apply_along_axis(affine.shear(1, 0), 1, green)
+    np.apply_along_axis(affine.shear(1, 0), 1, red)
+
+    np.apply_along_axis(utility.transform(C), 1, green)
 
     np.apply_along_axis(affine.shear(0.5, 0), 1, blue)
     np.apply_along_axis(affine.shear(0, 0.5), 1, blue)
