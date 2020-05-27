@@ -12,3 +12,18 @@ blue = {
     "edgecolor": "#1010CCFF",
     "facecolor": "#8080FF70"
 }
+
+yellow = {
+    "edgecolor": "#CCCC10FF",
+    "facecolor": "#FFFF8070"
+}
+
+purple = {
+    "edgecolor": "#CC10CCFF",
+    "facecolor": "#FF80FF70"
+}
+
+gray = {
+    "edgecolor": "#CCCCCCFF",
+    "facecolor": "#FFFFFF70"
+}

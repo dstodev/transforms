@@ -19,8 +19,8 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
 
 if __name__ == "__main__":
     fig, ax = pyplot.subplots(figsize=(5, 5))
-    ax.set_xlim(-1, 3)
-    ax.set_ylim(-1, 3)
+    ax.set_xlim(-0.5, 2.5)
+    ax.set_ylim(-0.5, 2.5)
 
     origin_x = 0.5
     origin_y = 0.5
@@ -35,17 +35,20 @@ if __name__ == "__main__":
     ])
     C = np.dot(A, B)
 
-    square_a = square(origin_x, origin_y)
-    square_b = square(origin_x, origin_y)
-    square_c = square(origin_x, origin_y)
+    gray = square(origin_x, origin_y)
+    red = square(origin_x, origin_y)
+    green = square(origin_x, origin_y)
+    blue = square(origin_x, origin_y)
 
-    np.apply_along_axis(affine.shear(0.5, 0), 1, square_a)
-    np.apply_along_axis(affine.shear(0, 0.5), 1, square_a)
-    np.apply_along_axis(utility.transform(C), 1, square_b)
-    np.apply_along_axis(affine.shear(1, 0), 1, square_c)
+    np.apply_along_axis(utility.transform(C), 1, red)
+    np.apply_along_axis(affine.shear(1, 0), 1, green)
 
-    ax.add_patch(patches.Polygon(square_a, **style.blue))
-    ax.add_patch(patches.Polygon(square_b, **style.red))
-    ax.add_patch(patches.Polygon(square_c, **style.green))
+    np.apply_along_axis(affine.shear(0.5, 0), 1, blue)
+    np.apply_along_axis(affine.shear(0, 0.5), 1, blue)
+
+    ax.add_patch(patches.Polygon(gray, **style.gray))
+    ax.add_patch(patches.Polygon(red, **style.red))
+    ax.add_patch(patches.Polygon(green, **style.green))
+    ax.add_patch(patches.Polygon(blue, **style.blue))
 
     pyplot.show()

@@ -15,10 +15,17 @@
 			"console": "internalConsole"
 		},
 		{
-			"name": "Python: Entrypoint",
+			"name": "Python: Shape Transforms",
 			"type": "python",
 			"request": "launch",
-			"program": "${workspaceFolder}/main.py",
+			"program": "${workspaceFolder}/shape.py",
+			"console": "internalConsole"
+		},
+		{
+			"name": "Python: Color Transforms",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/color.py",
 			"console": "internalConsole"
 		}
 	]
