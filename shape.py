@@ -20,11 +20,13 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
 if __name__ == "__main__":
     fig, ax = pyplot.subplots(figsize=(5, 5))
     pyplot.grid(alpha=0.15, linestyle="--")
-    ax.set_xlim(-0.5, 2.5)
-    ax.set_ylim(-0.5, 2.5)
+    ax.set_xlim(-1.5, 1.5)
+    ax.set_ylim(-1.5, 1.5)
 
-    origin_x = 0.5
-    origin_y = 0.5
+    origin_x = 0
+    origin_y = 0
+
+	# BATx == ?BAx
 
     A = np.array([
         [1, 0.5],
@@ -34,12 +36,19 @@ if __name__ == "__main__":
         [1, 0],
         [0.5, 1]
     ])
-    C = np.dot(A, B)
+    C = np.dot(B, A)
 
     gray = square(origin_x, origin_y)
     red = square(origin_x, origin_y)
     green = square(origin_x, origin_y)
     blue = square(origin_x, origin_y)
+
+	# (AB)' == B'A'
+	# ABx --> xBA
+
+	# xAB == (B'A'x')'
+
+	# (xBA)' = B'A'x' = B'(A'x') ~= BAx in transposed coordinates
 
     np.apply_along_axis(affine.shear(1, 0), 1, red)
 
