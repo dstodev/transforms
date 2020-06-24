@@ -13,6 +13,9 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
 
 
 def transform(matrix: np.array, row_vector=False):
+    if row_vector:
+        matrix = matrix.transpose()
+
     def func(point: np.array):
         # if point has fewer columns that matrix rows, pad point columns with 1
         delta = matrix.shape[0] - point.shape[0]
@@ -21,12 +24,9 @@ def transform(matrix: np.array, row_vector=False):
         else:
             coordinate = point
 
-        if row_vector:
-            # vector, matrix -> operate on row vectors
-            coordinate = np.dot(coordinate, matrix)
-        else:
-            # matrix, vector -> operate on column vectors
-            coordinate = np.dot(matrix, coordinate)
+        # matrix, vector -> operate on column vectors
+        # vector, matrix -> operate on row vectors
+        coordinate = np.dot(matrix, coordinate)
 
         point[:] = coordinate[:point.size]
 
