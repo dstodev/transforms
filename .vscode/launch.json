@@ -33,6 +33,7 @@
 			"args": [
 				"-v"
 			],
+			"internalConsoleOptions": "openOnSessionStart",
 			"console": "internalConsole"
 		}
 	]

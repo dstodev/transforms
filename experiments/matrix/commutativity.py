@@ -30,7 +30,8 @@ def experiment():
     """Show that matrix multiplication (dot product) is not commutative, but that the order of operations can be
     reversed using matrix transposition.
     """
-    fig, ax = pyplot.subplots(figsize=(5, 5))
+    _fig, ax = pyplot.subplots(figsize=(5, 5))
+
     pyplot.grid(alpha=0.15, linestyle="--")
     ax.set_xlim(-0.5, 2.5)
     ax.set_ylim(-0.5, 2.5)
@@ -53,7 +54,7 @@ def experiment():
         [0.5, 1]
     ])
     T = np.dot(Y, X)  # YXv -> Shear horizontally, then vertically
-    T_ = np.dot(X.transpose(), Y.transpose())  # YXv --> v'X'Y'
+    T_ = np.dot(X.T, Y.T)  # YXv --> v'X'Y'
 
     # Shear horizontally, then vertically.
     np.apply_along_axis(affine.shear(0.5, 0), 1, blue)
