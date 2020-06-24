@@ -5,6 +5,27 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Matrix Commutativity",
+			"type": "python",
+			"request": "launch",
+			"module": "experiments.matrix.commutativity",
+			"cwd": "${workspaceFolder}",
+			"console": "integratedTerminal",
+			"presentation": {
+				"group": "Matrix"
+			}
+		},
+		{
+			"name": "Color Shift",
+			"type": "python",
+			"request": "launch",
+			"module": "experiments.color.shift",
+			"console": "integratedTerminal",
+			"presentation": {
+				"group": "Color"
+			}
+		},
+		{
 			"name": "Python: Unit Tests",
 			"type": "python",
 			"request": "launch",
@@ -12,20 +33,6 @@
 			"args": [
 				"-v"
 			],
-			"console": "internalConsole"
-		},
-		{
-			"name": "Python: Shape Transforms",
-			"type": "python",
-			"request": "launch",
-			"program": "${workspaceFolder}/shape.py",
-			"console": "internalConsole"
-		},
-		{
-			"name": "Python: Color Transforms",
-			"type": "python",
-			"request": "launch",
-			"program": "${workspaceFolder}/color.py",
 			"console": "internalConsole"
 		}
 	]

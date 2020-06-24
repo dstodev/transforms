@@ -1,7 +1,18 @@
 import numpy as np
 
 
-def transform(matrix: np.array):
+def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
+    offset = scale / 2
+
+    return np.array([
+        [center_x - offset, center_y - offset],  # Bottom left
+        [center_x - offset, center_y + offset],  # Top left
+        [center_x + offset, center_y + offset],  # Top right
+        [center_x + offset, center_y - offset]   # Bottom right
+    ], dtype=float)
+
+
+def transform(matrix: np.array, row_vector=False):
     def func(point: np.array):
         # if point has fewer columns that matrix rows, pad point columns with 1
         delta = matrix.shape[0] - point.shape[0]
@@ -10,9 +21,13 @@ def transform(matrix: np.array):
         else:
             coordinate = point
 
-        # vector, matrix -> operate on row vectors
-        # matrix, vector -> operate on column vectors
-        coordinate = np.dot(matrix, coordinate)
+        if row_vector:
+            # vector, matrix -> operate on row vectors
+            coordinate = np.dot(coordinate, matrix)
+        else:
+            # matrix, vector -> operate on column vectors
+            coordinate = np.dot(matrix, coordinate)
+
         point[:] = coordinate[:point.size]
 
     return func
