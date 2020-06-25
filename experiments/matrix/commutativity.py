@@ -45,6 +45,7 @@ def experiment():
     blue = utility.square(origin_x, origin_y)
     purple = utility.square(origin_x, origin_y)
 
+    # Transform patches
     X = np.array([  # Horizontal shear
         [1, 0.5],
         [0, 1]

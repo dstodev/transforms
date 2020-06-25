@@ -1,19 +1,27 @@
 import numpy as np
 
 
-def square(center_x: float = 0, center_y: float = 0, scale: float = 1):
+def square(center_x: float = 0, center_y: float = 0, scale: float = 1, homogenous: bool = False):
     offset = scale / 2
 
-    return np.array([
+    array: np.ndarray = np.array([
         [center_x - offset, center_y - offset],  # Bottom left
         [center_x - offset, center_y + offset],  # Top left
         [center_x + offset, center_y + offset],  # Top right
         [center_x + offset, center_y - offset]   # Bottom right
     ], dtype=float)
 
+    if homogenous:
+        array = np.hstack((array, np.ones((array.shape[0], 1), dtype=array.dtype)))
 
-def transform(matrix: np.array, row_vector=False):
+    return array
+
+
+def transform(matrix: np.array, row_vector: bool = False):
     if row_vector:
+        # matrix, vector -> operate on column vectors
+        # vector, matrix -> operate on row vectors
+        # Tx = (xT)' = x'T'
         matrix = matrix.transpose()
 
     def func(point: np.array):
@@ -24,8 +32,6 @@ def transform(matrix: np.array, row_vector=False):
         else:
             coordinate = point
 
-        # matrix, vector -> operate on column vectors
-        # vector, matrix -> operate on row vectors
         coordinate = np.dot(matrix, coordinate)
 
         point[:] = coordinate[:point.size]

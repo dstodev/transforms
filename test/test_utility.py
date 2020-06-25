@@ -15,6 +15,12 @@ class TestUtility(TestCase):
 
         self.assertCountEqual(expected, actual.tolist())
 
+    def test_square_homogenous(self):
+        expected = [[-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, 1]]
+        actual = square(0, 0, 2, homogenous=True)
+
+        self.assertCountEqual(expected, actual.tolist())
+
     def test_transform_matching_dimensions(self):
         expected = square(0, 0, 2)
         input_ = square(0, 0, 2)

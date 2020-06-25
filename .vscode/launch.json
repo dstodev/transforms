@@ -5,6 +5,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Matrix Perspective Projection",
+			"type": "python",
+			"request": "launch",
+			"module": "experiments.matrix.projection",
+			"cwd": "${workspaceFolder}",
+			"console": "integratedTerminal",
+			"presentation": {
+				"group": "Matrix"
+			}
+		},
+		{
 			"name": "Matrix Commutativity",
 			"type": "python",
 			"request": "launch",
