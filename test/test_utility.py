@@ -2,12 +2,32 @@ from unittest import TestCase, mock
 
 import numpy as np
 
-from src.utility import square, transform
+from src.utility import from_homogenous, square, to_homogenous, transform
 
 
 class TestUtility(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def test_to_homogenous(self):
+        expected = [[-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, 1]]
+        value_base = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+        value_in = np.array(value_base, copy=True)
+
+        actual = to_homogenous(value_in)
+
+        self.assertEqual(value_in.tolist(), value_base)  # Assert input was not modified
+        self.assertCountEqual(expected, actual.tolist())
+
+    def test_from_homogenous(self):
+        expected = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+        value_base = [[-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, 1]]
+        value_in = np.array(value_base, copy=True)
+
+        actual = from_homogenous(value_in)
+
+        self.assertEqual(value_in.tolist(), value_base)
+        self.assertEqual(expected, actual.tolist())
 
     def test_square(self):
         expected = [[-1, -1], [-1, 1], [1, -1], [1,  1]]
