@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from matplotlib import image, patches, pyplot
+from matplotlib import image, patches, pyplot, widgets
 
 import src.affine as affine
 import src.style as style
@@ -30,7 +30,8 @@ def experiment():
     """Show that matrix multiplication (dot product) is not commutative, but that the order of operations can be
     reversed using matrix transposition.
     """
-    _fig, ax = pyplot.subplots(figsize=(5, 5))
+    fig: pyplot.Figure = pyplot.figure(figsize=(5, 6))
+    ax: pyplot.Axes = fig.add_axes([0.1, 0.2, 0.85, 0.71])
 
     pyplot.grid(alpha=0.15, linestyle="--")
     ax.set_xlim(-0.5, 2.5)
@@ -57,19 +58,28 @@ def experiment():
     T = np.dot(Y, X)  # YXv -> Shear horizontally, then vertically
     T_ = np.dot(X.T, Y.T)  # YXv --> v'X'Y'
 
-    # Shear horizontally, then vertically.
-    np.apply_along_axis(affine.shear(0.5, 0), 1, blue)
-    np.apply_along_axis(affine.shear(0, 0.5), 1, blue)
+    slider_ax = fig.add_axes([0.1, 0.05, 0.8, 0.025])
+    ax.add_child_axes(slider_ax)
 
-    np.apply_along_axis(utility.transform(T), 1, red)  # YXv
-    np.apply_along_axis(utility.transform(T_, row_vector=True), 1, green)  # v'X'Y'
-    np.apply_along_axis(utility.transform(T.transpose(), row_vector=True), 1, purple)  # v'(YX)'
+    def update_blue(scale):
+        # Shear horizontally, then vertically.
+        blue = utility.square(origin_x, origin_y)
+        utility.apply_transform(affine.shear(scale, 0), blue)
+        utility.apply_transform(affine.shear(0, scale), blue)
+        blue_handle.xy = blue
+
+    shear_blue = widgets.Slider(slider_ax, "Shear Scale", 0, 1, 0.5)
+    shear_blue.on_changed(update_blue)
+
+    utility.apply_transform(T, red)  # YXv
+    utility.apply_transform(T_, green, row_vector=True)  # v'X'Y'
+    utility.apply_transform(T.transpose(), purple, row_vector=True)  # v'(YX)'
 
     # Add patches
     ax.add_patch(patches.Polygon(gray, **style.gray))
     ax.add_patch(patches.Polygon(red, **style.red))
     ax.add_patch(patches.Polygon(green, **style.green))
-    ax.add_patch(patches.Polygon(blue, **style.blue))
+    blue_handle: patches.Patch = ax.add_patch(patches.Polygon(blue, **style.blue))
     ax.add_patch(patches.Polygon(purple, **style.purple))
 
     pyplot.show()

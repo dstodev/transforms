@@ -2,7 +2,8 @@ from unittest import TestCase, mock
 
 import numpy as np
 
-from src.utility import from_homogenous, square, to_homogenous, transform
+from src.utility import (apply_transform, from_homogenous, square,
+                         to_homogenous, transform)
 
 
 class TestUtility(TestCase):
@@ -93,5 +94,33 @@ class TestUtility(TestCase):
 
         np.apply_along_axis(transform(T), 1, expected)
         np.apply_along_axis(transform(T_, row_vector=True), 1, actual)
+
+        self.assertEqual(expected.tolist(), actual.tolist())
+
+    def test_apply_transform_affine_translation(self):
+        expected = [[0, 1], [0, 3], [2, 1], [2, 3]]
+        actual = square(0, 0, 2)
+
+        T = np.array([
+            [1, 0, 1],  # Translate 1 unit right
+            [0, 1, 2],  # and 2 units up
+            [0, 0, 1]
+        ])
+        apply_transform(T, actual)
+
+        self.assertCountEqual(expected, actual.tolist())
+
+    def test_apply_transform_row_vector(self):
+        rect = [[0, 0], [0, 1], [2, 0], [2, 1]]
+        expected = np.array(rect)
+        actual = np.array(rect)
+
+        Sx = np.array([[1, 0.25], [0, 1]])
+        Sy = np.array([[1, 0], [0.5, 1]])
+        T = np.dot(Sx, Sy)
+        T_ = T.transpose()
+
+        apply_transform(T, expected)
+        apply_transform(T_, actual, row_vector=True)
 
         self.assertEqual(expected.tolist(), actual.tolist())

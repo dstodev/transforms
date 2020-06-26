@@ -18,7 +18,7 @@ def experiment():
     origin_x = 0.5
     origin_y = 0.5
     gray = utility.square(origin_x, origin_y)
-    red = utility.square(origin_x, origin_y)
+    red = utility.square(origin_x, origin_y, homogenous=True)
 
     # Transform patches
 

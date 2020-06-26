@@ -38,8 +38,7 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1, homogenou
         center_x (float, optional): X axis centerpoint. Defaults to 0.
         center_y (float, optional): Y axis centerpoint. Defaults to 0.
         scale (float, optional): Scale of the square. Defaults to 1.
-        homogenous (bool, optional): Include an extra coordinate for each point for projective geometry.
-            Defaults to False.
+        homogenous (bool, optional): Include an extra coordinate for each point for projective geometry. Defaults to False.
 
     Returns:
         np.ndarray: Array of points representing a square.
@@ -59,13 +58,12 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1, homogenou
     return array
 
 
-def transform(matrix: np.array, row_vector: bool = False) -> typing.Callable[[np.ndarray], None]:
+def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[np.ndarray], None]:
     """Returns a function which transforms points using the provided transformation `matrix` via matrix (dot) point.
 
     Args:
-        matrix (np.array): Transformation matrix
-        row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors.
-            Defaults to False.
+        matrix (np.ndarray): Transformation matrix
+        row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
 
     Returns:
         typing.Callable[[np.ndarray], None]: Function which takes points and transforms them in-place.
@@ -89,3 +87,14 @@ def transform(matrix: np.array, row_vector: bool = False) -> typing.Callable[[np
         point[:] = coordinate[:point.size]
 
     return func
+
+
+def apply_transform(transform_matrix: np.ndarray, points: np.ndarray, row_vector: bool = False):
+    """Applies `transform_matrix` to all points in array `points`.
+
+    Args:
+        transform_matrix (np.ndarray): Transformation matrix to apply to all points
+        points (np.ndarray): Array of points to transform
+        row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
+    """
+    np.apply_along_axis(transform(transform_matrix, row_vector=row_vector), 1, points)
