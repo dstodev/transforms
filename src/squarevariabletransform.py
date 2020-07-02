@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import patches
+from matplotlib import patches, widgets
 
 import src.utility as utility
 
@@ -24,12 +24,16 @@ import src.utility as utility
 
 
 class SquareVariableTransform:
-    def __init__(self, origin: tuple, scale: int, transform_matrix: np.ndarray = None):
+    def __init__(self, origin: tuple, scale: int, style: dict = None, transform_matrix: np.ndarray = None):
         self._matrix = transform_matrix
 
         self._indices = {}  # key: index tuple, value: index value
         self._square = utility.square(origin[0], origin[1], scale)
-        self._patch = patches.Polygon(self._square)
+
+        if style:
+            self._patch = patches.Polygon(self._square, **style)
+        else:
+            self._patch = patches.Polygon(self._square)
 
     def _get_transform_matrix(self):
         """If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
@@ -43,9 +47,22 @@ class SquareVariableTransform:
 
             I think I can just generate an NxN identity matrix, where N is the largest column dimension.
         """
+        # Make a new matrix that will support all elements in self._matrix and from self._indices
         indices = self._indices.keys()
-        max_x = max(index[0] for index in indices)
-        max_y = max(index[1] for index in indices)
+        max_y = max(index[1] for index in indices) + 1
+        if self._matrix is not None:
+            max_y = max(max_y, self._matrix.shape[1])
+        matrix = np.identity(max_y, dtype=float)
+
+        # Copy self._matrix into new matrix
+        if self._matrix is not None:
+            matrix[:self._matrix.shape[0], :self._matrix.shape[1]] = self._matrix
+
+        # Copy values specified in self._indices into new matrix
+        for index, value in self._indices.items():
+            matrix[index] = value
+
+        return matrix
 
     def _update_patch(self):
         points = utility.apply_transform(self._get_transform_matrix(), self._square)
@@ -53,12 +70,15 @@ class SquareVariableTransform:
 
     def _get_matrix_updater(self, index: tuple):
         def func(value: int):
-            self._matrix[index] = value
+            self._indices[index] = value
+            self._update_patch()
 
         return func
 
     def get_patch(self):
         return self._patch
 
-    def get_slider(self, index: tuple, label: str, min: int, max: int, initial: int):
-        pass
+    def register_slider(self, index: tuple, slider: widgets.Slider):
+        callback = self._get_matrix_updater(index)
+        slider.on_changed(callback)
+        callback(slider.valinit)
