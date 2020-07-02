@@ -44,20 +44,20 @@ class TestUtility(TestCase):
 
     def test_transform_matching_dimensions(self):
         expected = square(0, 0, 2)
-        input_ = square(0, 0, 2)
+        actual = square(0, 0, 2)
 
         T = np.array([
             [1, 0],
             [0, 1]
         ])
 
-        np.apply_along_axis(transform(T), 1, input_)
+        np.apply_along_axis(transform(T), 1, actual)
 
-        self.assertEqual(expected.tolist(), input_.tolist())
+        self.assertEqual(expected.tolist(), actual.tolist())
 
     def test_transform_smaller_coordinate(self):
         expected = square(0, 0, 2)
-        input_ = square(0, 0, 2)
+        actual = square(0, 0, 2)
 
         T = np.array([
             [1, 0, 0],
@@ -65,9 +65,9 @@ class TestUtility(TestCase):
             [0, 0, 1]
         ])
 
-        np.apply_along_axis(transform(T), 1, input_)
+        actual = np.apply_along_axis(transform(T), 1, actual)
 
-        self.assertEqual(expected.tolist(), input_.tolist())
+        self.assertEqual(expected.tolist(), actual.tolist())
 
     def test_transform_affine_translation(self):
         expected = [[0, 1], [0, 3], [2, 1], [2, 3]]
@@ -78,7 +78,7 @@ class TestUtility(TestCase):
             [0, 1, 2],  # and 2 units up
             [0, 0, 1]
         ])
-        np.apply_along_axis(transform(T), 1, actual)
+        actual = np.apply_along_axis(transform(T), 1, actual)
 
         self.assertCountEqual(expected, actual.tolist())
 
@@ -106,7 +106,7 @@ class TestUtility(TestCase):
             [0, 1, 2],  # and 2 units up
             [0, 0, 1]
         ])
-        apply_transform(T, actual)
+        actual = apply_transform(T, actual)
 
         self.assertCountEqual(expected, actual.tolist())
 
@@ -120,7 +120,7 @@ class TestUtility(TestCase):
         T = np.dot(Sx, Sy)
         T_ = T.transpose()
 
-        apply_transform(T, expected)
-        apply_transform(T_, actual, row_vector=True)
+        expected = apply_transform(T, expected)
+        actual = apply_transform(T_, actual, row_vector=True)
 
         self.assertEqual(expected.tolist(), actual.tolist())

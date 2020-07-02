@@ -1,0 +1,3 @@
+[submodule "lib/c4-plantuml"]
+	path = lib/c4-plantuml
+	url = https://github.com/RicardoNiepel/C4-PlantUML.git

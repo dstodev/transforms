@@ -1,0 +1,14 @@
+@startuml SquareVariableTransform
+skinparam ClassAttributeIconSize 0
+
+class SquareVariableTransform {
+	- _origin: tuple
+	- _scale: int
+	- _transform: ndarray
+
+	+ __init__(origin, scale, transform)
+	+ get_slider(index: tuple, label: str, min: int, max: int, initial: int)
+	- _updater()
+}
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml Transform
+skinparam ClassAttributeIconSize 0
+
+class Transform {
+
+}
+
+class TransformMatrix {
+	_cells: ndarray
+	_indices: dict[tuple, intRef]
+
+	+__init__(cells: ndarray)
+
+}
+
+@enduml

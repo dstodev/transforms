@@ -1,6 +1,7 @@
 import typing
 
 import numpy as np
+from matplotlib import patches, widgets
 
 
 def to_homogenous(array: np.ndarray) -> np.ndarray:
@@ -75,16 +76,17 @@ def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[
         matrix = matrix.transpose()
 
     def func(point: np.ndarray):
-        # if point has fewer columns that matrix rows, pad point columns with 1
-        delta = matrix.shape[0] - point.shape[0]
+        point_rows = point.shape[0]
+
+        # if point has fewer rows than matrix columns, pad point column with rows containing 1
+        delta = matrix.shape[1] - point_rows
         if delta > 0:
             coordinate = np.pad(point, (0, delta), constant_values=1)
         else:
             coordinate = point
 
-        coordinate = np.dot(matrix, coordinate)
-
-        point[:] = coordinate[:point.size]
+        coordinate = np.dot(matrix, coordinate)[:point_rows]
+        return coordinate
 
     return func
 
@@ -97,4 +99,16 @@ def apply_transform(transform_matrix: np.ndarray, points: np.ndarray, row_vector
         points (np.ndarray): Array of points to transform
         row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
     """
-    np.apply_along_axis(transform(transform_matrix, row_vector=row_vector), 1, points)
+    return np.apply_along_axis(transform(transform_matrix, row_vector=row_vector), 1, points)
+
+
+def apply_transform_slider(transform_matrix: np.ndarray, index: tuple, patch_origin: tuple, patch_handle, slider_label, slider_axis, slider_min, slider_max, initial_value):
+    def update_index(value):
+        shape = square(patch_origin[0], patch_origin[1])
+        transform_matrix[index] = value
+        apply_transform(transform_matrix, shape)
+        patch_handle.set_xy(shape)
+
+    slider = widgets.Slider(slider_axis, slider_label, slider_min, slider_max, initial_value)
+    slider.on_changed(update_index)
+    update_index(initial_value)

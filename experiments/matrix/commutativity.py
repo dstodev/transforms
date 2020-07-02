@@ -58,9 +58,9 @@ def experiment():
     T = np.dot(Y, X)  # YXv -> Shear horizontally, then vertically
     T_ = np.dot(X.T, Y.T)  # YXv --> v'X'Y'
 
-    utility.apply_transform(T, red)  # YXv
-    utility.apply_transform(T_, green, row_vector=True)  # v'X'Y'
-    utility.apply_transform(T.transpose(), purple, row_vector=True)  # v'(YX)'
+    red = utility.apply_transform(T, red)  # YXv
+    green = utility.apply_transform(T_, green, row_vector=True)  # v'X'Y'
+    purple = utility.apply_transform(T.transpose(), purple, row_vector=True)  # v'(YX)'
 
     # Add patches
     ax.add_patch(patches.Polygon(gray, **style.gray))
@@ -72,8 +72,8 @@ def experiment():
     def update_blue(scale):
         # Shear horizontally, then vertically.
         blue = utility.square(origin_x, origin_y)
-        utility.apply_transform(affine.shear(scale, 0), blue)
-        utility.apply_transform(affine.shear(0, scale), blue)
+        blue = utility.apply_transform(affine.shear(scale, 0), blue)
+        blue = utility.apply_transform(affine.shear(0, scale), blue)
         blue_handle.set_xy(blue)
 
     shear_ax_blue = fig.add_axes([0.1, 0.05, 0.8, 0.025])
