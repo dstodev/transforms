@@ -6,7 +6,7 @@ from numpy.linalg import norm
 
 import src.style as style
 import src.utility as utility
-from src.squarevariabletransform import SquareVariableTransform
+from src.interactivesquare import InteractiveSquare
 
 
 def experiment():
@@ -21,24 +21,22 @@ def experiment():
     origin_x = 0.5
     origin_y = 0.5
     gray = utility.square(origin_x, origin_y)
-    red = utility.square(origin_x, origin_y)
-    red = np.hstack((red, np.zeros((red.shape[0], 1), dtype=red.dtype)))
-    red = np.hstack((red, np.ones((red.shape[0], 1), dtype=red.dtype)))
+    red = utility.square(origin_x, origin_y, add_coords=[0, 1])
 
     T = np.array([
         [1, 0],
         [0.5, 1]
     ])
 
-    svt = SquareVariableTransform((0.5, 0.5), 1, style=style.purple, transform_matrix=T)
-    ax.add_patch(svt.get_patch())
+    sq = InteractiveSquare((0.5, 0.5), 1, style=style.purple, transform_matrix=T)
+    ax.add_patch(sq.get_patch())
 
     shear_ax_blue = fig.add_axes([0.1, 0.05, 0.8, 0.025])
     ax.add_child_axes(shear_ax_blue)
 
     shear_blue = widgets.Slider(shear_ax_blue, "Shear Scale", 0, 1, 0.5)
 
-    svt.register_slider((0, 1), shear_blue)
+    sq.register_slider((0, 1), shear_blue)
 
     # # Transform patches
     # P = np.array([

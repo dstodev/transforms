@@ -23,7 +23,7 @@ import src.utility as utility
 """
 
 
-class SquareVariableTransform:
+class InteractiveSquare:
     def __init__(self, origin: tuple, scale: int, style: dict = None, transform_matrix: np.ndarray = None):
         self._matrix = transform_matrix
 
@@ -46,6 +46,7 @@ class SquareVariableTransform:
                 [0 0 1 0]
 
             I think I can just generate an NxN identity matrix, where N is the largest column dimension.
+            Actually, maybe not--should the extra rows/columns be 0?
         """
         # Make a new matrix that will support all elements in self._matrix and from self._indices
         indices = self._indices.keys()

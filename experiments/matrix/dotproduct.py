@@ -6,11 +6,13 @@ from numpy.linalg import norm
 Note:
     Matrix dimensions are typically denoted as M x N, with M rows and N columns.
 
+    cos(theta) gives the x component of the coordinate pointed to by unit vector with angle theta
+    arccos(adjacent/hypotenuse) gives theta of vector <x, y>
+
 Matrix dot product:
     Two matrices MxN and PxQ:
         N must equal P
         Resultant matrix has shape MxQ
-
 """
 
 
@@ -20,8 +22,6 @@ def experiment():
 
     c = np.dot(a, b)
 
-    # cos(theta) gives the x component coordinate pointed to by unit vector with angle theta
-    # arccos(adjacent/hypotenuse) gives theta of vector <x, y>
     theta = np.arccos(c / (norm(a) * norm(b)))
 
 

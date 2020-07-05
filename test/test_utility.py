@@ -38,7 +38,13 @@ class TestUtility(TestCase):
 
     def test_square_homogenous(self):
         expected = [[-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, 1]]
-        actual = square(0, 0, 2, homogenous=True)
+        actual = square(0, 0, 2, add_coords=[1])
+
+        self.assertCountEqual(expected, actual.tolist())
+
+    def test_square_four_dimensional(self):
+        expected = [[-1, -1, 0, 1], [-1, 1, 0, 1], [1, -1, 0, 1], [1, 1, 0, 1]]
+        actual = square(0, 0, 2, add_coords=[0, 1])
 
         self.assertCountEqual(expected, actual.tolist())
 

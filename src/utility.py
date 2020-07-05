@@ -32,7 +32,7 @@ def from_homogenous(array: np.ndarray) -> np.ndarray:
     return np.array(rows)
 
 
-def square(center_x: float = 0, center_y: float = 0, scale: float = 1, homogenous: bool = False) -> np.ndarray:
+def square(center_x: float = 0, center_y: float = 0, scale: float = 1, add_coords: typing.Iterable = None) -> np.ndarray:
     """Returns a square with scale `scale` centered around (`center_x`, `center_y`).
 
     Args:
@@ -53,8 +53,11 @@ def square(center_x: float = 0, center_y: float = 0, scale: float = 1, homogenou
         [center_x + offset, center_y - offset]   # Bottom right
     ], dtype=float)
 
-    if homogenous:
-        array = to_homogenous(array)
+    if add_coords:
+        cols: np.ndarray = np.array(add_coords, dtype=array.dtype)
+        cols = np.tile(cols, array.shape[0])
+        cols = cols.reshape((array.shape[0], len(add_coords)))
+        array = np.hstack((array, cols))
 
     return array
 
@@ -100,15 +103,3 @@ def apply_transform(transform_matrix: np.ndarray, points: np.ndarray, row_vector
         row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
     """
     return np.apply_along_axis(transform(transform_matrix, row_vector=row_vector), 1, points)
-
-
-def apply_transform_slider(transform_matrix: np.ndarray, index: tuple, patch_origin: tuple, patch_handle, slider_label, slider_axis, slider_min, slider_max, initial_value):
-    def update_index(value):
-        shape = square(patch_origin[0], patch_origin[1])
-        transform_matrix[index] = value
-        apply_transform(transform_matrix, shape)
-        patch_handle.set_xy(shape)
-
-    slider = widgets.Slider(slider_axis, slider_label, slider_min, slider_max, initial_value)
-    slider.on_changed(update_index)
-    update_index(initial_value)
