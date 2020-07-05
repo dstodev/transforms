@@ -32,18 +32,22 @@ def from_homogenous(array: np.ndarray) -> np.ndarray:
     return np.array(rows)
 
 
-def square(center_x: float = 0, center_y: float = 0, scale: float = 1, add_coords: typing.Iterable = None) -> np.ndarray:
+def square(origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None) -> np.ndarray:
     """Returns a square with scale `scale` centered around (`center_x`, `center_y`).
 
     Args:
-        center_x (float, optional): X axis centerpoint. Defaults to 0.
-        center_y (float, optional): Y axis centerpoint. Defaults to 0.
+        origin (tuple, optional): 2D center of square coordinate. Defaults to (0, 0).
         scale (float, optional): Scale of the square. Defaults to 1.
-        homogenous (bool, optional): Include an extra coordinate for each point for projective geometry. Defaults to False.
+        add_coords (typing.Iterable, optional): Include these additional coordinates in each point. Defaults to None.
 
     Returns:
         np.ndarray: Array of points representing a square.
     """
+    if origin is None:
+        origin = (0, 0)
+
+    center_x = origin[0]
+    center_y = origin[1]
     offset = scale / 2
 
     array: np.ndarray = np.array([

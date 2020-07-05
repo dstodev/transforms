@@ -18,10 +18,9 @@ def experiment():
     ax.set_ylim(-0.5, 2.5)
 
     # Set up patch vertices
-    origin_x = 0.5
-    origin_y = 0.5
-    gray = utility.square(origin_x, origin_y)
-    red = utility.square(origin_x, origin_y, add_coords=[0, 1])
+    origin = (0.5, 0.5)
+    gray = utility.square(origin)
+    red = utility.square(origin, add_coords=[0, 1])
 
     T = np.array([
         [1, 0],

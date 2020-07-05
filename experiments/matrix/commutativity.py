@@ -38,13 +38,12 @@ def experiment():
     ax.set_ylim(-0.5, 2.5)
 
     # Set up patch vertices
-    origin_x = 0.5
-    origin_y = 0.5
-    gray = utility.square(origin_x, origin_y)
-    red = utility.square(origin_x, origin_y)
-    green = utility.square(origin_x, origin_y)
-    blue = utility.square(origin_x, origin_y)
-    purple = utility.square(origin_x, origin_y)
+    origin = (0.5, 0.5)
+    gray = utility.square(origin)
+    red = utility.square(origin)
+    green = utility.square(origin)
+    blue = utility.square(origin)
+    purple = utility.square(origin)
 
     # Transform patches
     X = np.array([  # Horizontal shear
@@ -71,7 +70,7 @@ def experiment():
 
     def update_blue(scale):
         # Shear horizontally, then vertically.
-        blue = utility.square(origin_x, origin_y)
+        blue = utility.square(origin)
         blue = utility.apply_transform(affine.shear(scale, 0), blue)
         blue = utility.apply_transform(affine.shear(0, scale), blue)
         blue_handle.set_xy(blue)

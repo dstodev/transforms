@@ -32,25 +32,25 @@ class TestUtility(TestCase):
 
     def test_square(self):
         expected = [[-1, -1], [-1, 1], [1, -1], [1,  1]]
-        actual = square(0, 0, 2)  # Square with width/height 2 centered around (0, 0)
+        actual = square((0, 0), 2)  # Square with width/height 2 centered around (0, 0)
 
         self.assertCountEqual(expected, actual.tolist())
 
     def test_square_homogenous(self):
         expected = [[-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, 1]]
-        actual = square(0, 0, 2, add_coords=[1])
+        actual = square((0, 0), 2, add_coords=[1])
 
         self.assertCountEqual(expected, actual.tolist())
 
     def test_square_four_dimensional(self):
         expected = [[-1, -1, 0, 1], [-1, 1, 0, 1], [1, -1, 0, 1], [1, 1, 0, 1]]
-        actual = square(0, 0, 2, add_coords=[0, 1])
+        actual = square((0, 0), 2, add_coords=[0, 1])
 
         self.assertCountEqual(expected, actual.tolist())
 
     def test_transform_matching_dimensions(self):
-        expected = square(0, 0, 2)
-        actual = square(0, 0, 2)
+        expected = square((0, 0), 2)
+        actual = square((0, 0), 2)
 
         T = np.array([
             [1, 0],
@@ -62,8 +62,8 @@ class TestUtility(TestCase):
         self.assertEqual(expected.tolist(), actual.tolist())
 
     def test_transform_smaller_coordinate(self):
-        expected = square(0, 0, 2)
-        actual = square(0, 0, 2)
+        expected = square((0, 0), 2)
+        actual = square((0, 0), 2)
 
         T = np.array([
             [1, 0, 0],
@@ -77,7 +77,7 @@ class TestUtility(TestCase):
 
     def test_transform_affine_translation(self):
         expected = [[0, 1], [0, 3], [2, 1], [2, 3]]
-        actual = square(0, 0, 2)
+        actual = square((0, 0), 2)
 
         T = np.array([
             [1, 0, 1],  # Translate 1 unit right
@@ -105,7 +105,7 @@ class TestUtility(TestCase):
 
     def test_apply_transform_affine_translation(self):
         expected = [[0, 1], [0, 3], [2, 1], [2, 3]]
-        actual = square(0, 0, 2)
+        actual = square((0, 0), 2)
 
         T = np.array([
             [1, 0, 1],  # Translate 1 unit right

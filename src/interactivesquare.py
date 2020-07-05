@@ -28,7 +28,7 @@ class InteractiveSquare:
         self._matrix = transform_matrix
 
         self._indices = {}  # key: index tuple, value: index value
-        self._square = utility.square(origin[0], origin[1], scale)
+        self._square = utility.square(origin, scale)
 
         if style:
             self._patch = patches.Polygon(self._square, **style)
