@@ -44,6 +44,7 @@ def square(origin: tuple = None, scale: float = 1, add_coords: typing.Iterable =
         np.ndarray: Array of points representing a square.
     """
     if origin is None:
+        # TODO: Should origin consider dimensions added by `add_coords`?
         origin = (0, 0)
 
     center_x = origin[0]
@@ -59,8 +60,7 @@ def square(origin: tuple = None, scale: float = 1, add_coords: typing.Iterable =
 
     if add_coords:
         cols: np.ndarray = np.array(add_coords, dtype=array.dtype)
-        cols = np.tile(cols, array.shape[0])
-        cols = cols.reshape((array.shape[0], len(add_coords)))
+        cols = np.tile(cols, (array.shape[0], 1))
         array = np.hstack((array, cols))
 
     return array
