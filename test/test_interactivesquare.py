@@ -38,9 +38,10 @@ class TestInteractiveSquare(TestCase):
     def test_get_transform_matrix_no_data(self):
         uut = InteractiveSquare()
 
+        expected = []
         actual = uut._get_transform_matrix()
 
-        self.assertEqual([], actual.tolist())
+        self.assertEqual(expected, actual.tolist())
 
     def test_get_transform_matrix_with_only_matrix(self):
         expected = np.array([
@@ -103,38 +104,36 @@ class TestInteractiveSquare(TestCase):
 
         self.assertEqual(expected, actual.tolist())
 
+    def test_get_transform_matrix_vertical_rectangular_matrix(self):
+        matrix = np.array([
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+            [1, 2, 3]
+        ])
 
-def test_get_transform_matrix_vertical_rectangular_matrix(self):
-    matrix = np.array([
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1],
-        [1, 2, 3],
-    ])
+        uut = InteractiveSquare(transform_matrix=matrix)
 
-    uut = InteractiveSquare(transform_matrix=matrix)
+        expected = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [1, 2, 3, 1]
+        ]
+        actual = uut._get_transform_matrix()
 
-    expected = [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [1, 2, 3, 1]
-    ]
-    actual = uut._get_transform_matrix()
+        self.assertEqual(expected, actual.tolist())
 
-    self.assertEqual(expected, actual.tolist())
+    def test_get_matrix_updater(self):
+        uut = InteractiveSquare()
 
+        func = uut._get_matrix_updater((0, 1))
+        func(0.5)
 
-def test_get_matrix_updater(self):
-    uut = InteractiveSquare()
+        expected = [
+            [1, 0.5],
+            [0, 1]
+        ]
+        actual = uut._get_transform_matrix()
 
-    func = uut._get_matrix_updater((0, 1))
-    func(0.5)
-
-    expected = [
-        [1, 0.5],
-        [0, 1]
-    ]
-    actual = uut._get_transform_matrix()
-
-    self.assertEqual(expected, actual.tolist())
+        self.assertEqual(expected, actual.tolist())

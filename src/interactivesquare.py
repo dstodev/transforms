@@ -26,16 +26,23 @@ class InteractiveSquare:
                 [0 1 0 0]
                 [0 0 1 0]
 
-            I think I can just generate an NxN identity matrix, where N is the largest column dimension.
+            I think I can just generate a square identity matrix with the largest matrix dimension.
         """
         # Make a new matrix that will support all elements in self._matrix and from self._indices
+        max_rows = 0
         max_cols = 0
+
         indices = self._indices.keys()
         if self._indices:
-            max_cols = max(index[1] for index in indices) + 1  # Shape is 1 greater than largest index
+            max_rows = max(index[0] for index in indices) + 1  # Shape is 1 greater than largest index
+            max_cols = max(index[1] for index in indices) + 1
+
         if self._matrix is not None:
+            max_rows = max(max_rows, self._matrix.shape[0])
             max_cols = max(max_cols, self._matrix.shape[1])
-        matrix = np.identity(max_cols, dtype=float)
+
+        dim = max(max_rows, max_cols)
+        matrix = np.identity(dim, dtype=float)
 
         # Copy self._matrix into new matrix
         if self._matrix is not None:
