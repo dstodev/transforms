@@ -32,8 +32,8 @@ class InteractiveSquare:
         max_rows = 0
         max_cols = 0
 
-        indices = self._indices.keys()
         if self._indices:
+            indices = self._indices.keys()
             max_rows = max(index[0] for index in indices) + 1  # Shape is 1 greater than largest index
             max_cols = max(index[1] for index in indices) + 1
 
