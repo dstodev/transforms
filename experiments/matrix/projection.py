@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from matplotlib import gridspec, image, patches, pyplot, widgets
+from matplotlib import gridspec, image, patches, pyplot, ticker, widgets
 from numpy.linalg import norm
 
 import src.style as style
@@ -17,8 +17,12 @@ def experiment():
     num_sliders = 5
     sliders = gridspec.GridSpecFromSubplotSpec(num_sliders, 1, grid[2, :])
 
-    pyplot.grid(alpha=0.15, linestyle="--")
     ax.axis("equal")
+    ax.grid(alpha=0.15, linestyle="--")
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(0.5))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
+    ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(4))
+    ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(4))
 
     # Set up patch vertices
     origin = (0.5, 0.5)
