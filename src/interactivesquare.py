@@ -67,10 +67,8 @@ class InteractiveSquare:
         return transform
 
     def _get_transform_matrix(self):
-        # Iterate over all matrices backwards, because logically, applying transform A and then B:
-        #   0: A
-        #   1: B
-        # must be applied like BAx where x is the point coordinate
+        # Iterate over all matrices backwards, because logically, applying transform A and then B must be applied
+        # like BAx where x is a point coordinate
         keys = sorted(self._matrices.keys(), reverse=True)
 
         if keys:
@@ -105,6 +103,7 @@ class InteractiveSquare:
             self._matrices[order] = [None, {}]
 
         self._matrices[order][0] = transform_matrix
+        self._update_patch()
 
     def register_slider(self, order: int, index: tuple, slider: widgets.Slider):
         callback = self._get_matrix_updater(order, index)

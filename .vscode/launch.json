@@ -10,7 +10,7 @@
 			"request": "launch",
 			"module": "experiments.matrix.projection",
 			"cwd": "${workspaceFolder}",
-			"console": "integratedTerminal",
+			"console": "internalConsole",
 			"presentation": {
 				"group": "Matrix"
 			}
@@ -21,7 +21,7 @@
 			"request": "launch",
 			"module": "experiments.matrix.commutativity",
 			"cwd": "${workspaceFolder}",
-			"console": "integratedTerminal",
+			"console": "internalConsole",
 			"presentation": {
 				"group": "Matrix"
 			}
@@ -31,7 +31,7 @@
 			"type": "python",
 			"request": "launch",
 			"module": "experiments.color.shift",
-			"console": "integratedTerminal",
+			"console": "internalConsole",
 			"presentation": {
 				"group": "Color"
 			}
