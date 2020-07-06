@@ -35,7 +35,7 @@ def experiment():
 
     shear_blue = widgets.Slider(shear_ax_blue, "Shear Scale", 0, 1, 0.5)
 
-    sq.register_slider((0, 1), shear_blue)
+    sq.register_slider(0, (0, 1), shear_blue)
 
     # # Transform patches
     # P = np.array([
