@@ -6,6 +6,7 @@ from matplotlib import image, patches, pyplot, widgets
 import src.affine as affine
 import src.style as style
 import src.utility as utility
+from src.interactivesquare import InteractiveSquare
 
 
 """Commutativity experiments
@@ -42,7 +43,6 @@ def experiment():
     gray = utility.square(origin)
     red = utility.square(origin)
     green = utility.square(origin)
-    blue = utility.square(origin)
     purple = utility.square(origin)
 
     # Transform patches
@@ -57,6 +57,7 @@ def experiment():
     T = np.dot(Y, X)  # YXv -> Shear horizontally, then vertically
     T_ = np.dot(X.T, Y.T)  # YXv --> v'X'Y'
 
+    blue = InteractiveSquare(origin, style=style.blue, transform_matrix=X)
     red = utility.apply_transform(T, red)  # YXv
     green = utility.apply_transform(T_, green, row_vector=True)  # v'X'Y'
     purple = utility.apply_transform(T.transpose(), purple, row_vector=True)  # v'(YX)'
@@ -65,22 +66,16 @@ def experiment():
     ax.add_patch(patches.Polygon(gray, **style.gray))
     ax.add_patch(patches.Polygon(red, **style.red))
     ax.add_patch(patches.Polygon(green, **style.green))
-    blue_handle: patches.Patch = ax.add_patch(patches.Polygon(blue, **style.blue))
+    ax.add_patch(blue.get_patch())
     ax.add_patch(patches.Polygon(purple, **style.purple))
-
-    def update_blue(scale):
-        # Shear horizontally, then vertically.
-        blue = utility.square(origin)
-        blue = utility.apply_transform(affine.shear(scale, 0), blue)
-        blue = utility.apply_transform(affine.shear(0, scale), blue)
-        blue_handle.set_xy(blue)
 
     shear_ax_blue = fig.add_axes([0.1, 0.05, 0.8, 0.025])
     ax.add_child_axes(shear_ax_blue)
 
-    shear_blue = widgets.Slider(shear_ax_blue, "Shear Scale", 0, 1, 0.5)
-    shear_blue.on_changed(update_blue)
-    update_blue(0.5)
+    slider = widgets.Slider(shear_ax_blue, "Shear Scale", 0, 1, 0.5)
+    #blue.register_slider(0, (0, 1), slider)
+    blue.register_slider(1, (1, 0), slider)
+    blue._update_patch()
 
     pyplot.show()
 

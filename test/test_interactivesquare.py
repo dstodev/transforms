@@ -223,8 +223,8 @@ class TestInteractiveSquare(TestCase):
         uut._matrices[2] = (matrix_2, {})
 
         expected = [
-            [1.125, 0.25],
-            [0.5,   1]
+            [1,   0.25],
+            [0.5, 1.125]
         ]
         actual = uut._get_transform_matrix()
 
@@ -241,8 +241,8 @@ class TestInteractiveSquare(TestCase):
         uut._matrices[2] = (None, {(1, 0): 0.5})
 
         expected = [
-            [1.125, 0.25],
-            [0.5,   1]
+            [1,   0.25],
+            [0.5, 1.125]
         ]
         actual = uut._get_transform_matrix()
 
@@ -254,8 +254,8 @@ class TestInteractiveSquare(TestCase):
         uut._matrices[2] = (None, {(1, 0): 0.5})
 
         expected = [
-            [1.125, 0.25],
-            [0.5,   1]
+            [1,   0.25],
+            [0.5, 1.125]
         ]
         actual = uut._get_transform_matrix()
 
@@ -276,8 +276,8 @@ class TestInteractiveSquare(TestCase):
         uut._matrices[2] = (matrix_2, {(1, 0): 1.25})
 
         expected = [
-            [1.3125, 1],
-            [1.75,   1.375]
+            [1.375, 1],
+            [1.75,  1.3125]
         ]
         actual = uut._get_transform_matrix()
 
@@ -303,8 +303,8 @@ class TestInteractiveSquare(TestCase):
         uut._matrices[3] = (matrix_2, {})
 
         expected = [
-            [6.453125,  7.09375],
-            [14.640625, 16.09375]
+            [8.078125, 11.96875],
+            [9.765625, 14.46875]
         ]
         actual = uut._get_transform_matrix()
 

@@ -67,7 +67,11 @@ class InteractiveSquare:
         return transform
 
     def _get_transform_matrix(self):
-        keys = sorted(self._matrices.keys())
+        # Iterate over all matrices backwards, because logically, applying transform A and then B:
+        #   0: A
+        #   1: B
+        # must be applied like BAx where x is the point coordinate
+        keys = sorted(self._matrices.keys(), reverse=True)
 
         if keys:
             transform = self._get_transform_matrix_component(keys[0])
