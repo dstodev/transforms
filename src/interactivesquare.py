@@ -4,27 +4,8 @@ from matplotlib import patches, widgets
 import src.utility as utility
 
 
-"""
-    blue_handle: patches.Patch = ax.add_patch(patches.Polygon(blue, **style.blue))
-
-    def update_blue(scale):
-        # Shear horizontally, then vertically.
-        blue = utility.square(origin_x, origin_y)
-        blue = utility.apply_transform(affine.shear(scale, 0), blue)
-        blue = utility.apply_transform(affine.shear(0, scale), blue)
-        blue_handle.set_xy(blue)
-
-    shear_ax_blue = fig.add_axes([0.1, 0.05, 0.8, 0.025])
-    ax.add_child_axes(shear_ax_blue)
-
-    shear_blue = widgets.Slider(shear_ax_blue, "Shear Scale", 0, 1, 0.5)
-    shear_blue.on_changed(update_blue)
-    update_blue(0.5)
-"""
-
-
 class InteractiveSquare:
-    def __init__(self, origin: tuple, scale: int, style: dict = None, transform_matrix: np.ndarray = None):
+    def __init__(self, origin: tuple = None, scale: int = 1, style: dict = None, transform_matrix: np.ndarray = None):
         self._matrix = transform_matrix
 
         self._indices = {}  # key: index tuple, value: index value
@@ -39,21 +20,22 @@ class InteractiveSquare:
         """If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
         copy _matrix into it.
 
-        TODO: But what about rectangular matrices?
+        TODO: But what about rectangular transform matrices?
             e.g.
                 [1 0 0 0]
                 [0 1 0 0]
                 [0 0 1 0]
 
             I think I can just generate an NxN identity matrix, where N is the largest column dimension.
-            Actually, maybe not--should the extra rows/columns be 0?
         """
         # Make a new matrix that will support all elements in self._matrix and from self._indices
+        max_cols = 0
         indices = self._indices.keys()
-        max_y = max(index[1] for index in indices) + 1
+        if self._indices:
+            max_cols = max(index[1] for index in indices) + 1  # Shape is 1 greater than largest index
         if self._matrix is not None:
-            max_y = max(max_y, self._matrix.shape[1])
-        matrix = np.identity(max_y, dtype=float)
+            max_cols = max(max_cols, self._matrix.shape[1])
+        matrix = np.identity(max_cols, dtype=float)
 
         # Copy self._matrix into new matrix
         if self._matrix is not None:
