@@ -11,11 +11,11 @@ from src.interactivesquare import InteractiveSquare
 
 def experiment():
     fig: pyplot.Figure = pyplot.figure()
-    grid = gridspec.GridSpec(3, 1, figure=fig)
-    ax: pyplot.Axes = pyplot.subplot(grid[:2, :])
+    grid = gridspec.GridSpec(4, 1, figure=fig)
+    ax: pyplot.Axes = pyplot.subplot(grid[:3, :])
 
-    num_sliders = 5
-    sliders = gridspec.GridSpecFromSubplotSpec(num_sliders, 1, grid[2, :])
+    num_sliders = 4
+    sliders = gridspec.GridSpecFromSubplotSpec(num_sliders, 1, grid[3, :])
 
     ax.axis("equal")
     ax.grid(alpha=0.15, linestyle="--")
@@ -36,15 +36,15 @@ def experiment():
         [0.5, 1]
     ])
 
-    sq = InteractiveSquare((0.5, 0.5), 1, style=style.purple)
+    sq = InteractiveSquare((0.5, 0.5), 1, style=style.green)
     ax.add_patch(sq.get_patch())
 
     ax_shear_x = pyplot.subplot(sliders[0, 0])
     ax_shear_y = pyplot.subplot(sliders[1, 0])
     ax.add_child_axes(ax_shear_x)
 
-    shear_x = widgets.Slider(ax_shear_x, "Shear Scale X", 0, 1, 0.5)
-    shear_y = widgets.Slider(ax_shear_y, "Shear Scale Y", 0, 1, 0.5)
+    shear_x = widgets.Slider(ax_shear_x, "Shear Scale X", 0, 1, 0.5, **style.darkgreen)
+    shear_y = widgets.Slider(ax_shear_y, "Shear Scale Y", 0, 1, 0.5, **style.darkgreen)
     sq.register_slider(0, (0, 1), shear_x)
     sq.register_slider(0, (1, 0), shear_y)
 

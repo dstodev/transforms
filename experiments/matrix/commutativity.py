@@ -3,7 +3,6 @@
 import numpy as np
 from matplotlib import image, patches, pyplot, widgets
 
-import src.affine as affine
 import src.style as style
 import src.utility as utility
 from src.interactivesquare import InteractiveSquare
