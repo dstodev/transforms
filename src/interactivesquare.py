@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 from matplotlib import patches, widgets
 
@@ -5,25 +7,36 @@ import src.utility as utility
 
 
 class InteractiveSquare:
-    def __init__(self, origin: tuple = None, scale: int = 1, style: dict = None, transform_matrix: np.ndarray = None):
+    def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
+                 transform_matrix: np.ndarray = None):
+        """Square which can be interacted with via various transform matrices and sliders which alter indices within
+        those matrices.
 
+        Args:
+            origin (tuple, optional): 2D center of square coordinate. Defaults to (0, 0).
+            scale (float, optional): Scale of the square. Defaults to 1.
+            add_coords (typing.Iterable, optional): Include these additional coordinates in each point. Defaults to None.
+            style (dict, optional): SPatch style. Defaults to None.
+            transform_matrix (np.ndarray, optional): Transformation matrix to apply to all points. Defaults to None.
+        """
         self._matrices = {}
-        """
-        {
-            key (int): (np.ndarray, {
-                (int, int): float
-            })
-        }
-        """
+        # {
+        #     key (int): (np.ndarray, {
+        #         (int, int): float
+        #     })
+        # }
+
         if transform_matrix is not None:
             self._matrices[0] = [transform_matrix, {}]
 
-        self._square = utility.square(origin, scale)
+        self._square = utility.square(origin, scale, add_coords=add_coords)
 
         if style:
-            self._patch = patches.Polygon(self._square, **style)
+            self._patch = patches.Polygon(self._square[:, :2], **style)
         else:
-            self._patch = patches.Polygon(self._square)
+            self._patch = patches.Polygon(self._square[:, :2])
+
+        self._update_patch()
 
     def _get_transform_matrix_component(self, order: int) -> np.ndarray:
         """If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
@@ -66,7 +79,7 @@ class InteractiveSquare:
 
         return transform
 
-    def _get_transform_matrix(self):
+    def _get_transform_matrix(self) -> np.ndarray:
         # Iterate over all matrices backwards, because logically, applying transform A and then B must be applied
         # like BAx where x is a point coordinate
         keys = sorted(self._matrices.keys(), reverse=True)
@@ -81,10 +94,18 @@ class InteractiveSquare:
         return transform
 
     def _update_patch(self):
-        points = utility.apply_transform(self._get_transform_matrix(), self._square)
-        self._patch.set_xy(points)
+        try:
+            points = utility.apply_transform(self._get_transform_matrix(), self._square)
+            # TODO: Callback to convert points into 2d pixel-space.
+            # TODO: For now, just look at first two coordinates for each point
+            points_2d = points[:, :2]
+            self._patch.set_xy(points_2d)
 
-    def _get_matrix_updater(self, order: int, index: tuple):
+        except IndexError:
+            # Instance does not have data to update the patch with.
+            pass
+
+    def _get_matrix_updater(self, order: int, index: tuple) -> typing.Callable:
         if order not in self._matrices:
             self._matrices[order] = [None, {}]
 
@@ -95,7 +116,7 @@ class InteractiveSquare:
 
         return func
 
-    def get_patch(self):
+    def get_patch(self) -> patches.Polygon:
         return self._patch
 
     def register_transform(self, order: int, transform_matrix: np.ndarray):

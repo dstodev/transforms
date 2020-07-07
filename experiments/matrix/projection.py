@@ -24,10 +24,12 @@ def experiment():
     ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(4))
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(4))
 
-    # Set up patch vertices
+    # Set up patches
     origin = (0.5, 0.5)
-    gray = utility.square(origin)
-    red = utility.square(origin, add_coords=[0, 1])
+    gray = InteractiveSquare(origin, style=style.gray)
+    ax.add_patch(gray.get_patch())
+    # red = InteractiveSquare(origin, add_coords=[0, 1], style=style.red)
+    # ax.add_patch(red.get_patch())
 
     T = np.array([
         [1,   0],
