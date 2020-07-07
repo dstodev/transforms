@@ -7,17 +7,30 @@ import src.utility as utility
 
 
 class InteractiveSquare:
+    """Square interactable via transform matrices, and sliders which alter matrix specific-index values.
+    """
+
     def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
                  transform_matrix: np.ndarray = None):
-        """Square which can be interacted with via various transform matrices and sliders which alter indices within
-        those matrices.
+        """Constructor
 
-        Args:
-            origin (tuple, optional): 2D center of square coordinate. Defaults to (0, 0).
-            scale (float, optional): Scale of the square. Defaults to 1.
-            add_coords (typing.Iterable, optional): Include these additional coordinates in each point. Defaults to None.
-            style (dict, optional): SPatch style. Defaults to None.
-            transform_matrix (np.ndarray, optional): Transformation matrix to apply to all points. Defaults to None.
+        Parameters
+        ----------
+        origin : tuple, optional
+            2D center of square, by default (0, 0)
+
+        scale : float, optional
+            Scale of the square, by default 1
+
+        add_coords : typing.Iterable, optional
+            Include these additional coordinates in each point, by default None
+
+        style : dict, optional
+            Patch style, by default None
+
+        transform_matrix : np.ndarray, optional
+            Transformation matrix to apply to all points, by default None
+
         """
         self._matrices = {}
         # {
@@ -39,17 +52,16 @@ class InteractiveSquare:
         self._update_patch()
 
     def _get_transform_matrix_component(self, order: int) -> np.ndarray:
-        """If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
-        copy _matrix into it.
+        # If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
+        # copy _matrix into it.
 
-        TODO: But what about rectangular transform matrices?
-            e.g.
-                [1 0 0 0]
-                [0 1 0 0]
-                [0 0 1 0]
+        # TODO: But what about rectangular transform matrices?
+        #     e.g.
+        #         [1 0 0 0]
+        #         [0 1 0 0]
+        #         [0 0 1 0]
 
-            I think I can just generate a square identity matrix with the largest matrix dimension.
-        """
+        #     I think I can just generate a square identity matrix with the largest matrix dimension.
         entry = self._matrices[order]
         matrix = entry[0]
         indices = entry[1]

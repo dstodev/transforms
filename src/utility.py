@@ -5,25 +5,35 @@ from matplotlib import patches, widgets
 
 
 def to_homogenous(array: np.ndarray) -> np.ndarray:
-    """Convert the input set of points to the homogenous coordinate space.
+    """Convert each point in `array` to the homogenous coordinate space
 
-    Args:
-        array (np.ndarray): Array of points to convert.
+    Parameters
+    ----------
+    array : np.ndarray
+        Array of points to convert
 
-    Returns:
-        np.ndarray: Array of points converted to the homogenous coordinate space.
+    Returns
+    -------
+    np.ndarray
+        Array of points converted to the homogenous coordinate space
+
     """
     return np.hstack((array, np.ones((array.shape[0], 1), dtype=array.dtype)))
 
 
 def from_homogenous(array: np.ndarray) -> np.ndarray:
-    """Convert the input set of points to the cartesian coordinate space.
+    """Convert each point in `array` to the cartesian coordinate space
 
-    Args:
-        array (np.ndarray): Array of points to convert.
+    Parameters
+    ----------
+    array : np.ndarray
+        Array of points to convert
 
-    Returns:
-        np.ndarray: Array of points converted to the cartesian coordinate space.
+    Returns
+    -------
+    np.ndarray
+        Array of points converted to the cartesian coordinate space
+
     """
     rows = []
     for row in array:
@@ -33,15 +43,24 @@ def from_homogenous(array: np.ndarray) -> np.ndarray:
 
 
 def square(origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None) -> np.ndarray:
-    """Returns a square with scale `scale` centered around (`center_x`, `center_y`).
+    """Returns a square with scale `scale` centered around (`center_x`, `center_y`)
 
-    Args:
-        origin (tuple, optional): 2D center of square coordinate. Defaults to (0, 0).
-        scale (float, optional): Scale of the square. Defaults to 1.
-        add_coords (typing.Iterable, optional): Include these additional coordinates in each point. Defaults to None.
+    Parameters
+    ----------
+    origin : tuple, optional
+        2D center of square coordinate. Defaults to (0, 0), by default None
 
-    Returns:
-        np.ndarray: Array of points representing a square.
+    scale : float, optional
+        Scale of the square, by default 1
+
+    add_coords : typing.Iterable, optional
+        Include these additional coordinates in each point, by default None
+
+    Returns
+    -------
+    np.ndarray
+        Vector of points representing a square
+
     """
     if origin is None:
         # TODO: Should origin consider dimensions added by `add_coords`?
@@ -69,12 +88,19 @@ def square(origin: tuple = None, scale: float = 1, add_coords: typing.Iterable =
 def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[np.ndarray], None]:
     """Returns a function which transforms points using the provided transformation `matrix` via matrix (dot) point.
 
-    Args:
-        matrix (np.ndarray): Transformation matrix
-        row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
+    Parameters
+    ----------
+    matrix : np.ndarray
+        Transformation matrix
 
-    Returns:
-        typing.Callable[[np.ndarray], None]: Function which takes points and transforms them in-place.
+    row_vector : bool, optional
+        `False` to treat points as column vectors, `True` to treat points as row vectors, by default False
+
+    Returns
+    -------
+    typing.Callable[[np.ndarray], None]
+        Function which takes points and transforms them in-place
+
     """
     if row_vector:
         # matrix, vector -> operate on column vectors
@@ -98,12 +124,24 @@ def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[
     return func
 
 
-def apply_transform(transform_matrix: np.ndarray, points: np.ndarray, row_vector: bool = False):
-    """Applies `transform_matrix` to all points in array `points`.
+def apply_transform(transform_matrix: np.ndarray, points: np.ndarray, row_vector: bool = False) -> np.ndarray:
+    """Applies `transform_matrix` to all points in array `points`
 
-    Args:
-        transform_matrix (np.ndarray): Transformation matrix to apply to all points
-        points (np.ndarray): Array of points to transform
-        row_vector (bool, optional): `False` to treat points as column vectors, `True` to treat points as row vectors. Defaults to False.
+    Parameters
+    ----------
+    transform_matrix : np.ndarray
+        Transformation matrix to apply to all points
+
+    points : np.ndarray
+        Array of points to transform
+
+    row_vector : bool, optional
+        `False` to treat points as column vectors, `True` to treat points as row vectors, by default False
+
+    Returns
+    -------
+    np.ndarray
+        Vector of transformed points
+
     """
     return np.apply_along_axis(transform(transform_matrix, row_vector=row_vector), 1, points)
