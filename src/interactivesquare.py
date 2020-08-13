@@ -11,7 +11,7 @@ class InteractiveSquare:
     """
 
     def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
-                 transform_matrix: np.ndarray = None):
+                 transform_matrix: np.ndarray = None, callback_2d: typing.Callable = None):
         """Constructor
 
         Parameters
@@ -31,6 +31,9 @@ class InteractiveSquare:
         transform_matrix : np.ndarray, optional
             Transformation matrix to apply to all points, by default None
 
+        callback_2d: typing.Callable, optional
+            Conversion function from the point's space to 2d space
+
         """
         self._matrices = {}
         # {
@@ -42,6 +45,11 @@ class InteractiveSquare:
         if transform_matrix is not None:
             self._matrices[0] = [transform_matrix, {}]
 
+        if callback_2d is None:
+            self._callback_2d = self._first_two_coordinates
+        else:
+            self._callback_2d = callback_2d
+
         self._square = utility.square(origin, scale, add_coords=add_coords)
 
         if style:
@@ -49,7 +57,12 @@ class InteractiveSquare:
         else:
             self._patch = patches.Polygon(self._square[:, :2])
 
+        self._update_index = 0
         self._update_patch()
+
+    @staticmethod
+    def _first_two_coordinates(point: np.ndarray) -> np.ndarray:
+        return point[:, :2]
 
     def _get_transform_matrix_component(self, order: int) -> np.ndarray:
         # If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
@@ -107,24 +120,31 @@ class InteractiveSquare:
 
     def _update_patch(self):
         try:
-            points = utility.apply_transform(self._get_transform_matrix(), self._square)
-            # TODO: Callback to convert points into 2d pixel-space.
-            # TODO: For now, just look at first two coordinates for each point
-            points_2d = points[:, :2]
-            self._patch.set_xy(points_2d)
+            transform = self._get_transform_matrix()
+            points = utility.apply_transform(transform, self._square)
+
+            if points.shape[1] > 2:
+                points = self._callback_2d(points)
+
+            self._patch.set_xy(points)
 
         except IndexError:
             # Instance does not have data to update the patch with.
             pass
 
-    def _get_matrix_updater(self, order: int, index: tuple) -> typing.Callable:
+    def _update(self, _):
+        return self._update_patch()
+
+    def _get_matrix_updater(self, order: int, index: tuple, mutator: typing.Callable = None) -> typing.Callable:
         if order not in self._matrices:
             self._matrices[order] = [None, {}]
 
         def func(value: int):
+            if mutator is not None:
+                value = mutator(value)
+
             indices = self._matrices[order][1]
             indices[index] = value
-            self._update_patch()
 
         return func
 
@@ -138,7 +158,15 @@ class InteractiveSquare:
         self._matrices[order][0] = transform_matrix
         self._update_patch()
 
-    def register_slider(self, order: int, index: tuple, slider: widgets.Slider):
-        callback = self._get_matrix_updater(order, index)
+    def register_slider(self, order: int, index: tuple, slider: widgets.Slider, mutator: typing.Callable = None):
+        callback = self._get_matrix_updater(order, index, mutator)
         slider.on_changed(callback)
+
+        # self._update must be called last! Disconnect and reconnect it if it was already registered.
+        # Note: This will cause fragmentation of indices in the slider.
+        if self._update in slider.observers.values():
+            slider.disconnect(self._update_index)
+
+        self._update_index = slider.on_changed(self._update)
+
         callback(slider.valinit)

@@ -140,6 +140,20 @@ class TestInteractiveSquare(TestCase):
 
         self.assertEqual(expected, actual.tolist())
 
+    def test_get_matrix_updater_mutator(self):
+        uut = InteractiveSquare()
+
+        func = uut._get_matrix_updater(0, (0, 1), lambda v: v + 1)
+        func(1)
+
+        expected = [
+            [1, 2],
+            [0, 1]
+        ]
+        actual = uut._get_transform_matrix_component(0)
+
+        self.assertEqual(expected, actual.tolist())
+
     def test_register_transform(self):
         uut = InteractiveSquare()
 
