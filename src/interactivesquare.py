@@ -267,7 +267,7 @@ class InteractiveSquare:
         """
         return self._patch
 
-    def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable[[np.ndarray, np.ndarray], None] = None):
+    def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable[[np.ndarray, np.ndarray], np.ndarray] = None):
         """Register the transformation matrix as a component matrix.
 
         Parameters
@@ -275,7 +275,7 @@ class InteractiveSquare:
         transform_matrix : np.ndarray
             Matrix to register.
 
-        coalescer : typing.Callable[[np.ndarray, np.ndarray], None], optional
+        coalescer : typing.Callable[[np.ndarray, np.ndarray], np.ndarray], optional
             Function that coalesces this matrix with the previously registered matrix (if applicable),
             by default np.dot().
 
