@@ -7,11 +7,66 @@ import src.utility as utility
 
 
 class InteractiveSquare:
-    """Square interactable via transform matrices, and sliders which alter matrix specific-index values.
+    """Square interactable via transform matrices, and sliders which alter matrix-index values.
+
+    Square which can have multiple transformation matrices registered to it. Multiple registered matrices
+    are coalesced into one matrix before being applied to the square. By default, matrices are coalesced
+    using the dot product, but transforms can be registered alongside a coalescing function to override this.
+
+    Matrices are registered in order starting from 0, but are coalesced in reverse order.
+    This is because applying matrix A and then B is applied like (BA)x where x is the point vector.
+
+    Sliders can be registered to control the value of any index of any component matrix.
+
+    Example
+    -------
+
+    shear_x = np.array([
+        [1, 0.5],
+        [0,   1]
+    ])
+    shear_y = np.array([
+        [1,   0],
+        [0.5, 1]
+    ])
+
+    square = InteractiveSquare()
+    square.register_transform(shear_x)
+
+    #       (shear_x)
+    #       [1, 0.5]   ->  np.dot  ->  [point_x]
+    #       [0,   1]                   [point_y]
+
+    square.register_transform(shear_y)
+
+    #       (shear_y)                  (shear_x)
+    #       [1,   0]   ->  np.dot  ->  [1, 0.5]   ->  np.dot  ->  [point_x]
+    #       [0.5, 1]                   [0,   1]                   [point_y]
+
+    square = InteractiveSquare()
+    square.register_transform(shear_x)
+
+    #       (shear_x)
+    #       [1, 0.5]   ->  np.dot  ->  [point_x]
+    #       [0,   1]                   [point_y]
+
+    square.register_transform(shear_y, my_function)
+
+    #       (shear_y)                       (shear_x)
+    #       [1,   0]   ->  my_function  ->  [1, 0.5]  ->  np.dot  ->  [point_x]
+    #       [0.5, 1]                        [0,   1]                  [point_y]
+
+    my_slider = widgets.Slider(axes, "Shear X", 0, 1, 0.5)
+    square.register_slider(0, (0, 1), my_slider)
+
+    #       (shear_y)                       (shear_x)
+    #       [1,   0]   ->  my_function  ->  [1, my_slider]  ->  np.dot  ->  [point_x]
+    #       [0.5, 1]                        [0,         1]                  [point_y]
+
     """
 
     def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
-                 transform_matrix: np.ndarray = None, callback_2d: typing.Callable = None):
+                 convert_2d: typing.Callable = None):
         """Constructor
 
         Parameters
@@ -28,27 +83,23 @@ class InteractiveSquare:
         style : dict, optional
             Patch style, by default None
 
-        transform_matrix : np.ndarray, optional
-            Transformation matrix to apply to all points, by default None
-
-        callback_2d: typing.Callable, optional
+        convert_2d: typing.Callable, optional
             Conversion function from the point's space to 2d space
 
         """
         self._matrices = {}
         # {
-        #     key (int): (np.ndarray, {
-        #         (int, int): float
-        #     })
+        #   key (int): [
+        #       np.ndarray,             # Transform matrix
+        #       { (int, int): float },  # Index into matrix: Value for index
+        #       typing.Callable         # Coalescing function
+        #   ]
         # }
 
-        if transform_matrix is not None:
-            self._matrices[0] = [transform_matrix, {}]
-
-        if callback_2d is None:
-            self._callback_2d = self._first_two_coordinates
+        if convert_2d is None:
+            self._convert_2d = self._first_two_coordinates
         else:
-            self._callback_2d = callback_2d
+            self._convert_2d = convert_2d
 
         self._square = utility.square(origin, scale, add_coords=add_coords)
 
@@ -57,6 +108,7 @@ class InteractiveSquare:
         else:
             self._patch = patches.Polygon(self._square[:, :2])
 
+        self._num_matrices = 0
         self._update_index = 0
         self._update_patch()
 
@@ -65,16 +117,18 @@ class InteractiveSquare:
         return point[:, :2]
 
     def _get_transform_matrix_component(self, order: int) -> np.ndarray:
-        # If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
-        # copy _matrix into it.
+        """Returns transform matrix with index `order`
 
-        # TODO: But what about rectangular transform matrices?
-        #     e.g.
-        #         [1 0 0 0]
-        #         [0 1 0 0]
-        #         [0 0 1 0]
+        Parameters
+        ----------
+        order : int
+            Index of transform matrix
 
-        #     I think I can just generate a square identity matrix with the largest matrix dimension.
+        Returns
+        -------
+        np.ndarray
+            Transform matrix at index `order`
+        """
         entry = self._matrices[order]
         matrix = entry[0]
         indices = entry[1]
@@ -91,6 +145,8 @@ class InteractiveSquare:
             max_rows = max(max_rows, matrix.shape[0])
             max_cols = max(max_cols, matrix.shape[1])
 
+        # If _indices reference dimensions larger than the shape of _matrix, generate a new identity matrix and
+        # copy _matrix into it.
         dim = max(max_rows, max_cols)
         transform = np.identity(dim, dtype=float)
 
@@ -105,16 +161,30 @@ class InteractiveSquare:
         return transform
 
     def _get_transform_matrix(self) -> np.ndarray:
+        """Coalesces each component matrix to produce a single transform matrix
+
+        Returns
+        -------
+        np.ndarray
+            Single transformation matrix produced from all component matrices
+        """
         # Iterate over all matrices backwards, because logically, applying transform A and then B must be applied
         # like BAx where x is a point coordinate
-        keys = sorted(self._matrices.keys(), reverse=True)
+        components = sorted(self._matrices.items(), reverse=True)
 
-        if keys:
-            transform = self._get_transform_matrix_component(keys[0])
-            for order in keys[1:]:
-                transform = np.dot(transform, self._get_transform_matrix_component(order))
+        if components:
+            transform = self._get_transform_matrix_component(components[0][0])
+            coalesce = components[0][1][2]
         else:
             transform = np.array([])
+
+        for component in components[1:]:
+            key = component[0]
+            data = component[1]
+
+            transform = coalesce(transform, self._get_transform_matrix_component(key))
+
+            coalesce = data[2]
 
         return transform
 
@@ -124,7 +194,7 @@ class InteractiveSquare:
             points = utility.apply_transform(transform, self._square)
 
             if points.shape[1] > 2:
-                points = self._callback_2d(points)
+                points = self._convert_2d(points)
 
             self._patch.set_xy(points)
 
@@ -137,7 +207,12 @@ class InteractiveSquare:
 
     def _get_matrix_updater(self, order: int, index: tuple, mutator: typing.Callable = None) -> typing.Callable:
         if order not in self._matrices:
-            self._matrices[order] = [None, {}]
+            if order == 0:
+                coalescer = None
+            else:
+                coalescer = np.dot
+
+            self._matrices[order] = [None, {}, coalescer]
 
         def func(value: int):
             if mutator is not None:
@@ -151,11 +226,18 @@ class InteractiveSquare:
     def get_patch(self) -> patches.Polygon:
         return self._patch
 
-    def register_transform(self, order: int, transform_matrix: np.ndarray):
-        if order not in self._matrices:
-            self._matrices[order] = [None, {}]
+    def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable = None):
+        order = self._num_matrices
+        if order == 0:
+            if coalescer is not None:
+                raise ValueError("First transform has nothing to coalesce with!")
+        else:
+            if coalescer is None:
+                coalescer = np.dot
 
-        self._matrices[order][0] = transform_matrix
+        self._num_matrices += 1
+
+        self._matrices[order] = [transform_matrix, {}, coalescer]
         self._update_patch()
 
     def register_slider(self, order: int, index: tuple, slider: widgets.Slider, mutator: typing.Callable = None):

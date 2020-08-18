@@ -50,7 +50,8 @@ class TestInteractiveSquare(TestCase):
             [0.5, 1]
         ])
 
-        uut = InteractiveSquare(transform_matrix=expected)
+        uut = InteractiveSquare()
+        uut._matrices[0] = [expected, {}, None]
 
         actual = uut._get_transform_matrix_component(0)
 
@@ -76,7 +77,8 @@ class TestInteractiveSquare(TestCase):
             [0, 1]
         ])
 
-        uut = InteractiveSquare(transform_matrix=matrix)
+        uut = InteractiveSquare()
+        uut._matrices[0] = [matrix, {}, None]
         uut._matrices[0][1][(1, 0)] = 0.5
 
         expected = np.array([
@@ -94,7 +96,8 @@ class TestInteractiveSquare(TestCase):
             [0, 0, 1, 3]
         ])
 
-        uut = InteractiveSquare(transform_matrix=matrix)
+        uut = InteractiveSquare()
+        uut._matrices[0] = [matrix, {}, None]
 
         expected = [
             [1, 0, 0, 1],
@@ -114,7 +117,8 @@ class TestInteractiveSquare(TestCase):
             [1, 2, 3]
         ])
 
-        uut = InteractiveSquare(transform_matrix=matrix)
+        uut = InteractiveSquare()
+        uut._matrices[0] = [matrix, {}, None]
 
         expected = [
             [1, 0, 0, 0],
@@ -162,12 +166,43 @@ class TestInteractiveSquare(TestCase):
             [0.5, 1]
         ])
 
-        uut.register_transform(1, matrix)
+        uut.register_transform(matrix)
 
-        expected = {1: [matrix, {}]}
+        expected = {0: [matrix, {}, None]}
         actual = uut._matrices
 
         self.assertEqual(expected, actual)
+
+    def test_register_transform_with_coalescer(self):
+        uut = InteractiveSquare()
+
+        matrix_1 = np.array([
+            [1,   0.25],
+            [0.5, 1]
+        ])
+        matrix_2 = np.array([
+            [1, 0],
+            [0, 1]
+        ])
+
+        uut.register_transform(matrix_1)
+        uut.register_transform(matrix_2)
+
+        expected = {0: [matrix_1, {}, None], 1: [matrix_2, {}, np.dot]}
+        actual = uut._matrices
+
+        self.assertEqual(expected, actual)
+
+    def test_register_transform_coalesce_with_nothing(self):
+        uut = InteractiveSquare()
+
+        matrix = np.array([
+            [1,   0.25],
+            [0.5, 1]
+        ])
+
+        with self.assertRaises(ValueError):
+            uut.register_transform(matrix, coalescer=np.dot)
 
     def test_get_transform_matrix_no_data(self):
         uut = InteractiveSquare()
@@ -185,7 +220,7 @@ class TestInteractiveSquare(TestCase):
             [0.5, 1]
         ])
 
-        uut.register_transform(1, expected)
+        uut.register_transform(expected)
 
         actual = uut._get_transform_matrix()
 
@@ -193,7 +228,7 @@ class TestInteractiveSquare(TestCase):
 
     def test_get_transform_matrix_one_order_only_indices(self):
         uut = InteractiveSquare()
-        uut._matrices[1] = (None, {(0, 1): 0.25})
+        uut._matrices[1] = (None, {(0, 1): 0.25}, None)
 
         expected = [
             [1, 0.25],
@@ -211,7 +246,8 @@ class TestInteractiveSquare(TestCase):
             [0, 1]
         ])
 
-        uut = InteractiveSquare(transform_matrix=matrix)
+        uut = InteractiveSquare()
+        uut._matrices[0] = [matrix, {}, None]
         uut._matrices[0][1][(1, 0)] = 0.5
 
         expected = np.array([
@@ -233,8 +269,8 @@ class TestInteractiveSquare(TestCase):
         ])
 
         uut = InteractiveSquare()
-        uut._matrices[1] = (matrix_1, {})
-        uut._matrices[2] = (matrix_2, {})
+        uut._matrices[1] = (matrix_1, {}, np.dot)
+        uut._matrices[2] = (matrix_2, {}, np.dot)
 
         expected = [
             [1,   0.25],
@@ -251,8 +287,8 @@ class TestInteractiveSquare(TestCase):
         ])
 
         uut = InteractiveSquare()
-        uut._matrices[1] = (matrix, {})
-        uut._matrices[2] = (None, {(1, 0): 0.5})
+        uut._matrices[1] = (matrix, {}, np.dot)
+        uut._matrices[2] = (None, {(1, 0): 0.5}, np.dot)
 
         expected = [
             [1,   0.25],
@@ -264,8 +300,8 @@ class TestInteractiveSquare(TestCase):
 
     def test_get_transform_matrix_two_order_only_indices(self):
         uut = InteractiveSquare()
-        uut._matrices[1] = (None, {(0, 1): 0.25})
-        uut._matrices[2] = (None, {(1, 0): 0.5})
+        uut._matrices[1] = (None, {(0, 1): 0.25}, np.dot)
+        uut._matrices[2] = (None, {(1, 0): 0.5}, np.dot)
 
         expected = [
             [1,   0.25],
@@ -286,8 +322,8 @@ class TestInteractiveSquare(TestCase):
         ])
 
         uut = InteractiveSquare()
-        uut._matrices[1] = (matrix_1, {(1, 0): 0.5})
-        uut._matrices[2] = (matrix_2, {(1, 0): 1.25})
+        uut._matrices[1] = (matrix_1, {(1, 0): 0.5}, np.dot)
+        uut._matrices[2] = (matrix_2, {(1, 0): 1.25}, np.dot)
 
         expected = [
             [1.375, 1],
@@ -312,9 +348,9 @@ class TestInteractiveSquare(TestCase):
         ])
 
         uut = InteractiveSquare()
-        uut._matrices[1] = (matrix_1, {})
-        uut._matrices[7] = (matrix_3, {})
-        uut._matrices[3] = (matrix_2, {})
+        uut._matrices[1] = (matrix_1, {}, np.dot)
+        uut._matrices[7] = (matrix_3, {}, np.dot)
+        uut._matrices[3] = (matrix_2, {}, np.dot)
 
         expected = [
             [8.078125, 11.96875],

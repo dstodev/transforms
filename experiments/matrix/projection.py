@@ -51,11 +51,11 @@ def experiment():
     Ry = np.identity(3)
     Rz = np.identity(3)
 
-    green = InteractiveSquare((0.5, 0.5), 1, style=style.green, callback_2d=utility.from_homogenous)
+    green = InteractiveSquare((0.5, 0.5), 1, style=style.green, convert_2d=utility.from_homogenous)
     axes.add_patch(green.get_patch())
 
-    green.register_transform(0, K)
-    green.register_transform(1, RT)
+    green.register_transform(K)
+    green.register_transform(RT)
 
     slider_1 = widgets.Slider(pyplot.subplot(sliders[0, 0]), "Rotate: X", 0, 360, 0, **style.darkgreen)
     green.register_slider(1, (1, 1), slider_1, lambda v: math.cos(math.radians(v)))
