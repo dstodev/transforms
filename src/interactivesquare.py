@@ -66,7 +66,7 @@ class InteractiveSquare:
     """
 
     def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
-                 convert_2d: typing.Callable = None):
+                 convert_2d: typing.Callable[[np.ndarray], np.ndarray] = None):
         """Constructor
 
         Parameters
@@ -83,7 +83,7 @@ class InteractiveSquare:
         style : dict, optional
             Patch style, by default None
 
-        convert_2d: typing.Callable, optional
+        convert_2d: typing.Callable[[np.ndarray], np.ndarray], optional
             Conversion function from the point's space to 2d space
 
         """
@@ -92,7 +92,7 @@ class InteractiveSquare:
         #   key (int): [
         #       np.ndarray,             # Transform matrix
         #       { (int, int): float },  # Index into matrix: Value for index
-        #       typing.Callable         # Coalescing function
+        #       typing.Callable[[np.ndarray, np.ndarray], None]  # Coalescing function
         #   ]
         # }
 
@@ -189,6 +189,8 @@ class InteractiveSquare:
         return transform
 
     def _update_patch(self):
+        """Update the square patch given the current transform matrix
+        """
         try:
             transform = self._get_transform_matrix()
             points = utility.apply_transform(transform, self._square)
@@ -203,9 +205,28 @@ class InteractiveSquare:
             pass
 
     def _update(self, _):
-        return self._update_patch()
+        """Callback function for slider.on_changed() that discards the given parameter
+        """
+        self._update_patch()
 
-    def _get_matrix_updater(self, order: int, index: tuple, mutator: typing.Callable = None) -> typing.Callable:
+    def _get_matrix_updater(self, order: int, index: tuple, mutator: typing.Callable[[int], int] = None) -> typing.Callable[[int], None]:
+        """Returns a function that updates the value for an index into a matrix
+
+        Parameters
+        ----------
+        order : int
+            Index of the matrix to select
+        index : tuple
+            Index of the value within the selected matrix
+        mutator : typing.Callable[[int], None], optional
+            Callable function to mutate the given value, by default None
+
+        Returns
+        -------
+        typing.Callable[[int], int]
+            Function which takes an integer, mutates the integer with the given callback (if specified), and stores
+            the ultimate value in the selected matrix at the specified index
+        """
         if order not in self._matrices:
             if order == 0:
                 coalescer = None
@@ -224,23 +245,58 @@ class InteractiveSquare:
         return func
 
     def get_patch(self) -> patches.Polygon:
+        """Returns a patch for the square to register into an Axes object
+
+        Returns
+        -------
+        patches.Polygon
+            Patch for the square
+        """
         return self._patch
 
-    def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable = None):
-        order = self._num_matrices
-        if order == 0:
+    def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable[[np.ndarray, np.ndarray], None] = None):
+        """Register the transformation matrix as a component matrix
+
+        Parameters
+        ----------
+        transform_matrix : np.ndarray
+            Matrix to register
+        coalescer : typing.Callable[[np.ndarray, np.ndarray], None], optional
+            Function that coalesces this matrix with the previously registered matrix (if applicable),
+            by default np.dot()
+
+        Raises
+        ------
+        ValueError
+            Raised when a coalescer is provided alongside the first transform matrix, as there are no prior
+            matrices to coalesce with.
+        """
+        if self._num_matrices == 0:
             if coalescer is not None:
                 raise ValueError("First transform has nothing to coalesce with!")
         else:
             if coalescer is None:
                 coalescer = np.dot
 
+        self._matrices[self._num_matrices] = [transform_matrix, {}, coalescer]
         self._num_matrices += 1
-
-        self._matrices[order] = [transform_matrix, {}, coalescer]
         self._update_patch()
 
-    def register_slider(self, order: int, index: tuple, slider: widgets.Slider, mutator: typing.Callable = None):
+    def register_slider(self, order: int, index: tuple, slider: widgets.Slider, mutator: typing.Callable[[int], int] = None):
+        """Register a slider to control the value of matrix `order` at `index`
+
+        Parameters
+        ----------
+        order : int
+            Index of the matrix to select
+        index : tuple
+            Index of the value within the selected matrix
+        slider : widgets.Slider
+            Slider to register
+        mutator : typing.Callable[[int], int], optional
+            Callable function to mutate the slider value, by default None
+            e.g. to convert the slider value from degrees to radians
+        """
         callback = self._get_matrix_updater(order, index, mutator)
         slider.on_changed(callback)
 
