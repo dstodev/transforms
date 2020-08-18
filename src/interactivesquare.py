@@ -67,7 +67,7 @@ class InteractiveSquare:
 
     def __init__(self, origin: tuple = None, scale: float = 1, add_coords: typing.Iterable = None, style: dict = None,
                  convert_2d: typing.Callable[[np.ndarray], np.ndarray] = None):
-        """Constructor
+        """Constructs an instance.
 
         Parameters
         ----------
@@ -114,20 +114,32 @@ class InteractiveSquare:
 
     @staticmethod
     def _first_two_coordinates(point: np.ndarray) -> np.ndarray:
-        return point[:, :2]
-
-    def _get_transform_matrix_component(self, order: int) -> np.ndarray:
-        """Returns transform matrix with index `order`
+        """Converts an N-dimensional point vector into a 2-dimensional point vector by truncating coordinates past the second
 
         Parameters
         ----------
-        order : int
-            Index of transform matrix
+        point : np.ndarray
+            Point to convert.
 
         Returns
         -------
         np.ndarray
-            Transform matrix at index `order`
+            2D point vector.
+        """
+        return point[:, :2]
+
+    def _get_transform_matrix_component(self, order: int) -> np.ndarray:
+        """Returns transform matrix with index `order`.
+
+        Parameters
+        ----------
+        order : int
+            Index of transform matrix.
+
+        Returns
+        -------
+        np.ndarray
+            Transform matrix at index `order`.
         """
         entry = self._matrices[order]
         matrix = entry[0]
@@ -161,12 +173,12 @@ class InteractiveSquare:
         return transform
 
     def _get_transform_matrix(self) -> np.ndarray:
-        """Coalesces each component matrix to produce a single transform matrix
+        """Coalesces each component matrix to produce a single transform matrix.
 
         Returns
         -------
         np.ndarray
-            Single transformation matrix produced from all component matrices
+            Single transformation matrix produced from all component matrices.
         """
         # Iterate over all matrices backwards, because logically, applying transform A and then B must be applied
         # like BAx where x is a point coordinate
@@ -189,7 +201,7 @@ class InteractiveSquare:
         return transform
 
     def _update_patch(self):
-        """Update the square patch given the current transform matrix
+        """Update the square patch given the current transform matrix.
         """
         try:
             transform = self._get_transform_matrix()
@@ -210,22 +222,23 @@ class InteractiveSquare:
         self._update_patch()
 
     def _get_matrix_updater(self, order: int, index: tuple, mutator: typing.Callable[[int], int] = None) -> typing.Callable[[int], None]:
-        """Returns a function that updates the value for an index into a matrix
+        """Returns an 'updater' function that updates the value for an index into a matrix.
 
         Parameters
         ----------
         order : int
-            Index of the matrix to select
+            Index of the matrix to select.
+
         index : tuple
-            Index of the value within the selected matrix
-        mutator : typing.Callable[[int], None], optional
-            Callable function to mutate the given value, by default None
+            Index of the value within the selected matrix.
+
+        mutator : typing.Callable[[int], int], optional
+            Callable function to mutate values given to the updater, by default None.
 
         Returns
         -------
-        typing.Callable[[int], int]
-            Function which takes an integer, mutates the integer with the given callback (if specified), and stores
-            the ultimate value in the selected matrix at the specified index
+        typing.Callable[[int], None]
+            Callable which takes an integer and stores the ultimate value in the selected matrix at the specified index.
         """
         if order not in self._matrices:
             if order == 0:
@@ -235,35 +248,36 @@ class InteractiveSquare:
 
             self._matrices[order] = [None, {}, coalescer]
 
-        def func(value: int):
+        def updater(value: int):
             if mutator is not None:
                 value = mutator(value)
 
             indices = self._matrices[order][1]
             indices[index] = value
 
-        return func
+        return updater
 
     def get_patch(self) -> patches.Polygon:
-        """Returns a patch for the square to register into an Axes object
+        """Returns a patch for the square to register into an Axes object.
 
         Returns
         -------
         patches.Polygon
-            Patch for the square
+            Patch for the square.
         """
         return self._patch
 
     def register_transform(self, transform_matrix: np.ndarray, coalescer: typing.Callable[[np.ndarray, np.ndarray], None] = None):
-        """Register the transformation matrix as a component matrix
+        """Register the transformation matrix as a component matrix.
 
         Parameters
         ----------
         transform_matrix : np.ndarray
-            Matrix to register
+            Matrix to register.
+
         coalescer : typing.Callable[[np.ndarray, np.ndarray], None], optional
             Function that coalesces this matrix with the previously registered matrix (if applicable),
-            by default np.dot()
+            by default np.dot().
 
         Raises
         ------
@@ -288,14 +302,17 @@ class InteractiveSquare:
         Parameters
         ----------
         order : int
-            Index of the matrix to select
+            Index of the matrix to select.
+
         index : tuple
-            Index of the value within the selected matrix
+            Index of the value within the selected matrix.
+
         slider : widgets.Slider
-            Slider to register
+            Slider to register.
+
         mutator : typing.Callable[[int], int], optional
-            Callable function to mutate the slider value, by default None
-            e.g. to convert the slider value from degrees to radians
+            Callable function to mutate the slider value, by default None.
+            e.g. to convert the slider value from degrees to radians.
         """
         callback = self._get_matrix_updater(order, index, mutator)
         slider.on_changed(callback)
