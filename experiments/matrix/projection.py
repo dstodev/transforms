@@ -30,7 +30,7 @@ def experiment():
     axes.yaxis.set_minor_locator(ticker.AutoMinorLocator(4))
 
     # Set up gray (baseline) patch
-    origin = (0.5, 0.5)
+    origin = (0, 0)
     gray = InteractiveSquare(origin, style=style.gray)
     axes.add_patch(gray.get_patch())
 
@@ -47,16 +47,29 @@ def experiment():
         [0, 0, 0, 1]
     ])
 
-    Rx = np.identity(3)
-    Ry = np.identity(3)
-    Rz = np.identity(3)
+    Rx = np.identity(4)
+    Ry = np.identity(4)
+    Rz = np.identity(4)
+    #T = np.array([[0, 0, 0]])
+    #B = np.array([[0, 0, 0, 1]])
 
-    green = InteractiveSquare((0.5, 0.5), 1, style=style.green, convert_2d=utility.from_homogenous)
+    green = InteractiveSquare((0, 0), 1, style=style.green, convert_2d=utility.from_homogenous)
     axes.add_patch(green.get_patch())
 
-    green.register_transform(K)
-    green.register_transform(RT)
+    # TODO: Possible to render square differently, so that we can see if the square is "upside down".
+    #       Maybe put text next to each vertex?
 
+    green.register_transform(K)
+    # TODO: Add support for operation grouping? Rx, Ry, Rz, T, B must be resolved before K can dot it.
+    green.register_transform(Rx)
+    green.register_transform(Ry)
+    green.register_transform(Rz)
+    #green.register_transform(T, lambda a, b: np.concatenate((a, b.T), axis=1))
+    #green.register_transform(B, lambda a, b: np.concatenate((a, b), axis=0))
+
+    # TODO: Do not register sliders to x, y, z angles. Register them to pitch, yaw, and roll.
+    #       Would need to register matrices/sliders with functions to calculate world rotations so that
+    #       pitch, yaw, roll are valid. Need to convert from tait-bryan (intrinsic) to extrinsic angles.
     slider_1 = widgets.Slider(pyplot.subplot(sliders[0, 0]), "Rotate: X", 0, 360, 0, **style.darkgreen)
     green.register_slider(1, (1, 1), slider_1, lambda v: math.cos(math.radians(v)))
     green.register_slider(1, (2, 2), slider_1, lambda v: math.cos(math.radians(v)))
@@ -64,16 +77,16 @@ def experiment():
     green.register_slider(1, (2, 1), slider_1, lambda v: math.sin(math.radians(v)))
 
     slider_2 = widgets.Slider(pyplot.subplot(sliders[1, 0]), "Rotate: Y", 0, 360, 0, **style.darkgreen)
-    green.register_slider(1, (0, 0), slider_2, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
-    green.register_slider(1, (0, 2), slider_2, lambda v: math.sin(math.radians(v)))
+    green.register_slider(2, (0, 0), slider_2, lambda v: math.cos(math.radians(v)))
+    green.register_slider(2, (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
+    green.register_slider(2, (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider(2, (0, 2), slider_2, lambda v: math.sin(math.radians(v)))
 
     slider_3 = widgets.Slider(pyplot.subplot(sliders[2, 0]), "Rotate: Z", 0, 360, 0, **style.darkgreen)
-    green.register_slider(1, (0, 0), slider_3, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (0, 1), slider_3, lambda v: (-1 * math.sin(math.radians(v))))
-    green.register_slider(1, (1, 0), slider_3, lambda v: math.sin(math.radians(v)))
+    green.register_slider(3, (0, 0), slider_3, lambda v: math.cos(math.radians(v)))
+    green.register_slider(3, (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
+    green.register_slider(3, (0, 1), slider_3, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider(3, (1, 0), slider_3, lambda v: math.sin(math.radians(v)))
 
     axes.relim()
     axes.autoscale_view()

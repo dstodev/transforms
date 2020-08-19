@@ -194,7 +194,9 @@ class InteractiveSquare:
             key = component[0]
             data = component[1]
 
-            transform = coalesce(transform, self._get_transform_matrix_component(key))
+            rhs = self._get_transform_matrix_component(key)
+            # TODO: Raise a more useful exception, i.e. which coalescer function was called on which matrices
+            transform = coalesce(transform, rhs)
 
             coalesce = data[2]
 
