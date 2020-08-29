@@ -1,0 +1,34 @@
+@startuml TransformSequence
+skinparam ClassAttributeIconSize 0
+
+interface ComponentMatrix {
+	+ get_matrix()
+}
+
+class Node {
+	- component
+	- coalescer
+}
+
+class MutableMatrix {
+	- matrix
+	- overrides
+
+	+ get_matrix()
+	+ get_mutator()
+}
+
+class Sequence {
+	- nodes
+
+	+ get_matrix()
+	+ register_node()
+}
+
+Sequence o-- "1..*" Node
+Node o-- "1" ComponentMatrix
+
+ComponentMatrix <|.. MutableMatrix
+ComponentMatrix <|.. Sequence
+
+@enduml
