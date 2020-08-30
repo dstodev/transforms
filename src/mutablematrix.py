@@ -7,6 +7,23 @@ from src.componentmatrix import ComponentMatrix
 
 class MutableMatrix(ComponentMatrix):
     def __init__(self, matrix=None, override_mode: str = "by_ref"):
+        """Manages a matrix object and accompanying index-value overrides.
+
+        Manages an 2D np.ndarray (matrix) and a related dictionary of index-value
+        overrides. If override_mode is "by_ref" (default), values will
+
+        Parameters
+        ----------
+        matrix : [type], optional
+            [description], by default None
+        override_mode : str, optional
+            [description], by default "by_ref"
+
+        Raises
+        ------
+        ValueError
+            [description]
+        """
         if matrix is None:
             matrix = []
 
@@ -19,10 +36,32 @@ class MutableMatrix(ComponentMatrix):
         self._override_mode = override_mode
 
     def get_matrix(self) -> np.ndarray:
-        if self._override_mode == "by_val":
-            matrix = self._matrix.copy()
-        else:
+        """Returns a matrix after applying all index value overrides.
+
+        Returns
+        -------
+        np.ndarray
+            Matrix with overrides applied.
+
+        Example
+        -------
+        ```python
+        >>> mm = MutableMatrix([
+        ...     [1, 0],
+        ...     [0, 1]
+        ... ])
+
+        >>> mm._overrides[(0, 1)] = 2
+        >>> mm.get_matrix().tolist()  # doctest: +NORMALIZE_WHITESPACE
+        [[1, 2],
+         [0, 1]]
+
+        ```
+        """
+        if self._override_mode == "by_ref":
             matrix = self._matrix
+        else:
+            matrix = self._matrix.copy()
 
         for index, value in self._overrides.items():
             matrix[index] = value
@@ -71,11 +110,20 @@ class MutableMatrix(ComponentMatrix):
 
         ```
         """
-        if modifier is None:
-            def mutate(value: float):
-                self._overrides[index] = value
+        if self._override_mode == "by_ref":
+            if modifier is None:
+                def mutate(value: float):
+                    self._matrix[index] = value
+            else:
+                def mutate(value: float):
+                    self._matrix[index] = modifier(value)
+
         else:
-            def mutate(value: float):
-                self._overrides[index] = modifier(value)
+            if modifier is None:
+                def mutate(value: float):
+                    self._overrides[index] = value
+            else:
+                def mutate(value: float):
+                    self._overrides[index] = modifier(value)
 
         return mutate
