@@ -2,10 +2,27 @@ import typing
 
 import numpy as np
 
-Coalescer = typing.Callable[[np.ndarray, np.ndarray], np.ndarray]  # Coalesces two matrices into one matrix
+from src.componentmatrix import ComponentMatrix
 
 
 class Node:
-    def __init__(self):
-        self._component = None
-        self._coalescer = None
+    def __init__(self, component, coalescer):
+        """Node in a sequence.
+
+        Parameters
+        ----------
+        component : ComponentMatrix
+            Matrix to use as a component of the sequence.
+
+        coalescer : typing.Callable[[np.ndarray, np.ndarray], np.ndarray]
+            Function to merge this matrix with the previous matrix in the sequence.
+
+        """
+        self._component = component
+        self._coalescer = coalescer
+
+    def get_component(self):
+        return self._component
+
+    def get_coalescer(self):
+        return self._coalescer
