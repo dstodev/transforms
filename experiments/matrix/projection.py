@@ -33,7 +33,7 @@ def experiment():
 
     # Set up gray (baseline) patch
     origin = (0, 0)
-    gray = InteractiveSquare(origin, style=style.gray)
+    gray = InteractiveSquare(axes, origin, style=style.gray)
     axes.add_patch(gray.get_patch())
 
     # Set up green (interactive) patch
@@ -42,20 +42,14 @@ def experiment():
         [0, 1, 0, 0],  # [0  αᵧ ν₀ 0]
         [0, 0, 1, 0]   # [0  0  1  0]
     ])
-    # RT = np.array([  # Extrinsic parameter matrix
-    #     [1, 0, 0, 0],  # [R,3x3 T,3x1]
-    #     [0, 1, 0, 0],  # [0,1x3     1]
-    #     [0, 0, 1, 0],
-    #     [0, 0, 0, 1]
-    # ])
 
-    Rx = np.identity(3)
-    Ry = np.identity(3)
-    Rz = np.identity(3)
+    Rx = np.identity(3)  # Extrinsic parameter matrix
+    Ry = np.identity(3)  # [R,3x3 T,3x1]
+    Rz = np.identity(3)  # [0,1x3     1]
     T = np.array([[0, 0, 0]])
     B = np.array([[0, 0, 0, 1]])
 
-    green = InteractiveSquare((0, 0), 1, style=style.green, convert_2d=utility.from_homogenous)
+    green = InteractiveSquare(axes, (0, 0), 1, style=style.green, convert_2d=utility.from_homogenous, label_vertices=True)
     axes.add_patch(green.get_patch())
 
     # TODO: Possible to render square differently, so that we can see if the square is "upside down".

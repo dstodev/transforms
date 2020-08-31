@@ -1,7 +1,7 @@
 import typing
 
 import numpy as np
-from matplotlib import patches, widgets
+from matplotlib import axes, patches, widgets
 
 import src.utility as utility
 from src.mutablematrix import MutableMatrix
@@ -22,20 +22,26 @@ class InteractiveSquare:
 
     Parameters
     ----------
+    axes : axes.Axes
+        Axes object on which the square resides.
+
     origin : tuple, optional
-        2D center of square, by default (0, 0)
+        2D center of square, by default (0, 0).
 
     scale : float, optional
-        Scale of the square, by default 1
+        Scale of the square, by default 1.
 
     add_coords : typing.Iterable, optional
-        Include these additional coordinates in each point, by default None
+        Include these additional coordinates in each point, by default None.
 
     style : dict, optional
-        Patch style, by default None
+        Patch style, by default None.
 
     convert_2d: typing.Callable[[np.ndarray], np.ndarray], optional
-        Conversion function from the point's space to 2d space
+        Conversion function from the point's space to 2d space.
+
+    label_vertices: bool, optional
+        Label vertices of the square, by default False.
 
     Example
     -------
@@ -85,7 +91,7 @@ class InteractiveSquare:
     ```
     """
 
-    def __init__(self, origin=None, scale=1, add_coords=None, style=None, convert_2d=None):
+    def __init__(self, axes, origin=None, scale=1, add_coords=None, style=None, convert_2d=None, label_vertices=False):
         """Construct an instance."""
         self._sequence = Sequence()
 
@@ -100,6 +106,13 @@ class InteractiveSquare:
             self._patch = patches.Polygon(self._square[:, :2], **style)
         else:
             self._patch = patches.Polygon(self._square[:, :2])
+
+        self._labels = []
+        if label_vertices:
+            for (x, y), label in zip(self._patch.get_xy(), ["BL", "TL", "TR", "BR"]):
+                text = axes.text(x, y, label)
+                text.set_clip_on(True)
+                self._labels.append(text)
 
         self._update_index = 0
         self._update_patch()
@@ -130,14 +143,17 @@ class InteractiveSquare:
                 points = self._convert_2d(points)
 
             self._patch.set_xy(points)
+            if self._labels:
+                for label, (x, y) in zip(self._labels, points):
+                    label.set_x(x)
+                    label.set_y(y)
 
         except ValueError:
             # Instance does not have data to update the patch with.
             pass
 
     def _update(self, _):
-        """Callback function for slider.on_changed() that discards the given parameter
-        """
+        """Callback function for slider.on_changed() that discards the given parameter."""
         self._update_patch()
 
     def get_patch(self):
