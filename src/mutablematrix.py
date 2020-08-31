@@ -24,12 +24,12 @@ class MutableMatrix(ComponentMatrix):
         self._matrix = np.array(matrix, ndmin=2)
 
     def get_matrix(self) -> np.ndarray:
-        """Returns managed matrix."""
-
+        """Get managed matrix."""
         return self._matrix
 
     def get_mutator(self, index, modifier=None):
-        """Returns a function which sets `index` to the value it is given.
+        """Returns a function which sets the `index` of the managed matrix to the
+        value it is given.
 
         Returns a 'mutator' function which sets the matrix value at `index` when
         called with a value. Can provide a `modifier` callable which will modify

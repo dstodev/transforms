@@ -7,10 +7,26 @@ from src.node import Node
 
 class Sequence(ComponentMatrix):
     def __init__(self):
+        """Matrix sequence class.
+
+        Manages a sequence of component matrices.
+        """
         self._nodes = []
 
     def get_matrix(self):
-        matrix = self._nodes[0].get_component().get_matrix()
+        """Returns managed matrix.
+
+        Returns a single matrix formed from the coalescence of all nodes.
+
+        Returns
+        -------
+        np.ndarray
+            Coalesced matrix.
+        """
+        try:
+            matrix = self._nodes[0].get_component().get_matrix()
+        except IndexError:
+            raise ValueError("Sequence has no nodes to coalesce!")
 
         for node in self._nodes[1:]:
             coalesce = node.get_coalescer()

@@ -22,7 +22,9 @@ class Node:
         self._coalescer = coalescer
 
     def get_component(self):
+        """Get component matrix."""
         return self._component
 
     def get_coalescer(self):
+        """Get matrix coalescer."""
         return self._coalescer
