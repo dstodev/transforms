@@ -26,6 +26,18 @@ class TestSequence(TestCase):
 
         self.assertIsNotNone(uut)
 
+    def test_get_node(self):
+        uut = Sequence()
+
+        component = MockComponent()
+        coalescer = lambda: None
+
+        uut.register_node(component, coalescer)
+
+        self.assertEqual(1, len(uut._nodes))
+        self.assertIs(component, uut.get_node(0).get_component())
+        self.assertIs(coalescer, uut.get_node(0).get_coalescer())
+
     def test_register_node(self):
         uut = Sequence()
 
@@ -35,8 +47,8 @@ class TestSequence(TestCase):
         uut.register_node(component, coalescer)
 
         self.assertEqual(1, len(uut._nodes))
-        self.assertEqual(component, uut._nodes[0].get_component())
-        self.assertEqual(coalescer, uut._nodes[0].get_coalescer())
+        self.assertIs(component, uut.get_node(0).get_component())
+        self.assertIs(coalescer, uut.get_node(0).get_coalescer())
 
     def test_get_matrix_no_elements(self):
         uut = Sequence()

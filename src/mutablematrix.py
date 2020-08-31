@@ -6,18 +6,20 @@ from src.componentmatrix import ComponentMatrix
 
 
 class MutableMatrix(ComponentMatrix):
+    """Manages a matrix object which can be modified by "mutator" functions.
+
+    Manages an 2D np.ndarray (matrix) which can have its values mutated on a
+    per-index basis through functions returned by `get_mutator()`.
+
+    Parameters
+    ----------
+    matrix : typing.Iterable, optional
+        Matrix to manage, by default None
+
+    """
+
     def __init__(self, matrix=None):
-        """Manages a matrix object which can be modified by "mutator" functions.
-
-        Manages an 2D np.ndarray (matrix) which can have its values mutated on a
-        per-index basis through functions returned by `get_mutator()`.
-
-        Parameters
-        ----------
-        matrix : typing.Iterable, optional
-            Matrix to manage, by default None
-
-        """
+        """Construct an instance."""
         if matrix is None:
             matrix = []
 
@@ -62,7 +64,7 @@ class MutableMatrix(ComponentMatrix):
         [[1, 2],
          [0, 1]]
 
-        >>> mutator = mm.get_mutator((1, 0), modifier=lambda v: v+1)
+        >>> mutator = mm.get_mutator((1, 0), modifier=lambda v: v + 1)
         >>> mutator(2)
         >>> mm.get_matrix().tolist()  # doctest: +NORMALIZE_WHITESPACE
         [[1, 2],

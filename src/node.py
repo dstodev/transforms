@@ -6,18 +6,20 @@ from src.componentmatrix import ComponentMatrix
 
 
 class Node:
+    """Node in a sequence.
+
+    Parameters
+    ----------
+    component : ComponentMatrix
+        Matrix to use as a component of the sequence.
+
+    coalescer : typing.Callable[[np.ndarray, np.ndarray], np.ndarray]
+        Function to merge this matrix with the previous matrix in the sequence.
+
+    """
+
     def __init__(self, component, coalescer):
-        """Node in a sequence.
-
-        Parameters
-        ----------
-        component : ComponentMatrix
-            Matrix to use as a component of the sequence.
-
-        coalescer : typing.Callable[[np.ndarray, np.ndarray], np.ndarray]
-            Function to merge this matrix with the previous matrix in the sequence.
-
-        """
+        """Construct an instance."""
         self._component = component
         self._coalescer = coalescer
 

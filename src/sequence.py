@@ -6,11 +6,13 @@ from src.node import Node
 
 
 class Sequence(ComponentMatrix):
-    def __init__(self):
-        """Matrix sequence class.
+    """Matrix sequence class.
 
-        Manages a sequence of component matrices.
-        """
+    Manages a sequence of component matrices.
+    """
+
+    def __init__(self):
+        """Construct an instance."""
         self._nodes = []
 
     def get_matrix(self):
@@ -48,3 +50,18 @@ class Sequence(ComponentMatrix):
         """
         node = Node(component, coalescer)
         self._nodes.append(node)
+
+    def get_node(self, index):
+        """Gets node at `index`.
+
+        Parameters
+        ----------
+        index : int
+            Index of node to get.
+
+        Returns
+        -------
+        Node
+            Node at index.
+        """
+        return self._nodes[index]

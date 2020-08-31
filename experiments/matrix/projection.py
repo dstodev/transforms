@@ -36,13 +36,13 @@ def experiment():
 
     # Set up green (interactive) patch
     K = np.array([  # Intrinsic paremeter matrix
-        [1, 0, 0, 0],  # αₓ γ  μ₀ 0
-        [0, 1, 0, 0],  # 0  αᵧ ν₀ 0
-        [0, 0, 1, 0]   # 0  0  1  0
+        [1, 0, 0, 0],  # [αₓ γ  μ₀ 0]
+        [0, 1, 0, 0],  # [0  αᵧ ν₀ 0]
+        [0, 0, 1, 0]   # [0  0  1  0]
     ])
     RT = np.array([  # Extrinsic parameter matrix
         [1, 0, 0, 0],  # [R,3x3 T,3x1]
-        [0, 1, 0, 0],  # [0,1x3 1    ]
+        [0, 1, 0, 0],  # [0,1x3     1]
         [0, 0, 1, 0],
         [0, 0, 0, 1]
     ])
@@ -69,24 +69,24 @@ def experiment():
 
     # TODO: Do not register sliders to x, y, z angles. Register them to pitch, yaw, and roll.
     #       Would need to register matrices/sliders with functions to calculate world rotations so that
-    #       pitch, yaw, roll are valid. Need to convert from tait-bryan (intrinsic) to extrinsic angles.
+    #       pitch, yaw, roll are valid. Need to convert from tait-bryan (intrinsic) to Euler (extrinsic) angles.
     slider_1 = widgets.Slider(pyplot.subplot(sliders[0, 0]), "Rotate: X", 0, 360, 0, **style.darkgreen)
     green.register_slider(1, (1, 1), slider_1, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (2, 2), slider_1, lambda v: math.cos(math.radians(v)))
     green.register_slider(1, (1, 2), slider_1, lambda v: (-1 * math.sin(math.radians(v))))
     green.register_slider(1, (2, 1), slider_1, lambda v: math.sin(math.radians(v)))
+    green.register_slider(1, (2, 2), slider_1, lambda v: math.cos(math.radians(v)))
 
     slider_2 = widgets.Slider(pyplot.subplot(sliders[1, 0]), "Rotate: Y", 0, 360, 0, **style.darkgreen)
     green.register_slider(2, (0, 0), slider_2, lambda v: math.cos(math.radians(v)))
-    green.register_slider(2, (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
-    green.register_slider(2, (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
     green.register_slider(2, (0, 2), slider_2, lambda v: math.sin(math.radians(v)))
+    green.register_slider(2, (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider(2, (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
 
     slider_3 = widgets.Slider(pyplot.subplot(sliders[2, 0]), "Rotate: Z", 0, 360, 0, **style.darkgreen)
     green.register_slider(3, (0, 0), slider_3, lambda v: math.cos(math.radians(v)))
-    green.register_slider(3, (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
     green.register_slider(3, (0, 1), slider_3, lambda v: (-1 * math.sin(math.radians(v))))
     green.register_slider(3, (1, 0), slider_3, lambda v: math.sin(math.radians(v)))
+    green.register_slider(3, (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
 
     axes.relim()
     axes.autoscale_view()
