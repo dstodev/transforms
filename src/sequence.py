@@ -26,15 +26,16 @@ class Sequence(ComponentMatrix):
             Coalesced matrix.
         """
         try:
-            matrix = self._nodes[0].get_component().get_matrix()
+            lhs = self._nodes[0].get_component().get_matrix()
         except IndexError:
             raise ValueError("Sequence has no nodes to coalesce!")
 
         for node in self._nodes[1:]:
             coalesce = node.get_coalescer()
-            matrix = coalesce(matrix, node.get_component().get_matrix())
+            rhs = node.get_component().get_matrix()
+            lhs = coalesce(lhs, rhs)
 
-        return matrix
+        return lhs
 
     def register_node(self, component, coalescer):
         """Register a node into the sequence.

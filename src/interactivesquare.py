@@ -172,7 +172,8 @@ class InteractiveSquare:
         if coalescer is None:
             coalescer = np.dot
 
-        component = MutableMatrix(component)
+        if not isinstance(component, Sequence):
+            component = MutableMatrix(component)
 
         self._sequence.register_node(component, coalescer)
         self._update_patch()
@@ -199,11 +200,10 @@ class InteractiveSquare:
             index_of_component = (index_of_component,)
 
         node = self._sequence.get_node(index_of_component[0])
-        component = node.get_component()
-
         for index in index_of_component[1:]:
-            node = component.get_node(index)
-            component = node.get_component()
+            node = node.get_component().get_node(index)
+
+        component = node.get_component()
 
         callback = component.get_mutator(index_within_component, modifier)
         slider.on_changed(callback)

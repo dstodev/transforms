@@ -9,6 +9,8 @@ from numpy.linalg import norm
 import src.style as style
 import src.utility as utility
 from src.interactivesquare import InteractiveSquare
+from src.mutablematrix import MutableMatrix
+from src.sequence import Sequence
 
 
 def experiment():
@@ -40,18 +42,18 @@ def experiment():
         [0, 1, 0, 0],  # [0  αᵧ ν₀ 0]
         [0, 0, 1, 0]   # [0  0  1  0]
     ])
-    RT = np.array([  # Extrinsic parameter matrix
-        [1, 0, 0, 0],  # [R,3x3 T,3x1]
-        [0, 1, 0, 0],  # [0,1x3     1]
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-    ])
+    # RT = np.array([  # Extrinsic parameter matrix
+    #     [1, 0, 0, 0],  # [R,3x3 T,3x1]
+    #     [0, 1, 0, 0],  # [0,1x3     1]
+    #     [0, 0, 1, 0],
+    #     [0, 0, 0, 1]
+    # ])
 
-    Rx = np.identity(4)
-    Ry = np.identity(4)
-    Rz = np.identity(4)
-    #T = np.array([[0, 0, 0]])
-    #B = np.array([[0, 0, 0, 1]])
+    Rx = np.identity(3)
+    Ry = np.identity(3)
+    Rz = np.identity(3)
+    T = np.array([[0, 0, 0]])
+    B = np.array([[0, 0, 0, 1]])
 
     green = InteractiveSquare((0, 0), 1, style=style.green, convert_2d=utility.from_homogenous)
     axes.add_patch(green.get_patch())
@@ -60,33 +62,35 @@ def experiment():
     #       Maybe put text next to each vertex?
 
     green.register_transform(K)
-    # TODO: Add support for operation grouping? Rx, Ry, Rz, T, B must be resolved before K can dot it.
-    green.register_transform(Rx)
-    green.register_transform(Ry)
-    green.register_transform(Rz)
-    #green.register_transform(T, lambda a, b: np.concatenate((a, b.T), axis=1))
-    #green.register_transform(B, lambda a, b: np.concatenate((a, b), axis=0))
+    # Rx, Ry, Rz, T, B must be resolved before K can dot it.
+    RT = Sequence()
+    RT.register_node(MutableMatrix(Rx), None)
+    RT.register_node(MutableMatrix(Ry), np.dot)
+    RT.register_node(MutableMatrix(Rz), np.dot)
+    RT.register_node(MutableMatrix(T), lambda a, b: np.concatenate((a, b.T), axis=1))
+    RT.register_node(MutableMatrix(B), lambda a, b: np.concatenate((a, b), axis=0))
+    green.register_transform(RT)
 
     # TODO: Do not register sliders to x, y, z angles. Register them to pitch, yaw, and roll.
     #       Would need to register matrices/sliders with functions to calculate world rotations so that
     #       pitch, yaw, roll are valid. Need to convert from tait-bryan (intrinsic) to Euler (extrinsic) angles.
     slider_1 = widgets.Slider(pyplot.subplot(sliders[0, 0]), "Rotate: X", 0, 360, 0, **style.darkgreen)
-    green.register_slider(1, (1, 1), slider_1, lambda v: math.cos(math.radians(v)))
-    green.register_slider(1, (1, 2), slider_1, lambda v: (-1 * math.sin(math.radians(v))))
-    green.register_slider(1, (2, 1), slider_1, lambda v: math.sin(math.radians(v)))
-    green.register_slider(1, (2, 2), slider_1, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 0), (1, 1), slider_1, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 0), (1, 2), slider_1, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider((1, 0), (2, 1), slider_1, lambda v: math.sin(math.radians(v)))
+    green.register_slider((1, 0), (2, 2), slider_1, lambda v: math.cos(math.radians(v)))
 
     slider_2 = widgets.Slider(pyplot.subplot(sliders[1, 0]), "Rotate: Y", 0, 360, 0, **style.darkgreen)
-    green.register_slider(2, (0, 0), slider_2, lambda v: math.cos(math.radians(v)))
-    green.register_slider(2, (0, 2), slider_2, lambda v: math.sin(math.radians(v)))
-    green.register_slider(2, (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
-    green.register_slider(2, (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 1), (0, 0), slider_2, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 1), (0, 2), slider_2, lambda v: math.sin(math.radians(v)))
+    green.register_slider((1, 1), (2, 0), slider_2, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider((1, 1), (2, 2), slider_2, lambda v: math.cos(math.radians(v)))
 
     slider_3 = widgets.Slider(pyplot.subplot(sliders[2, 0]), "Rotate: Z", 0, 360, 0, **style.darkgreen)
-    green.register_slider(3, (0, 0), slider_3, lambda v: math.cos(math.radians(v)))
-    green.register_slider(3, (0, 1), slider_3, lambda v: (-1 * math.sin(math.radians(v))))
-    green.register_slider(3, (1, 0), slider_3, lambda v: math.sin(math.radians(v)))
-    green.register_slider(3, (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 2), (0, 0), slider_3, lambda v: math.cos(math.radians(v)))
+    green.register_slider((1, 2), (0, 1), slider_3, lambda v: (-1 * math.sin(math.radians(v))))
+    green.register_slider((1, 2), (1, 0), slider_3, lambda v: math.sin(math.radians(v)))
+    green.register_slider((1, 2), (1, 1), slider_3, lambda v: math.cos(math.radians(v)))
 
     axes.relim()
     axes.autoscale_view()
