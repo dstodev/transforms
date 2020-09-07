@@ -13,21 +13,28 @@ class MutableMatrix(ComponentMatrix):
 
     Parameters
     ----------
+    label : str
+        Label of the matrix.
+
     matrix : typing.Iterable, optional
         Matrix to manage, by default None
 
     """
-
-    def __init__(self, matrix=None):
+    def __init__(self, label, matrix=None):
         """Construct an instance."""
         if matrix is None:
             matrix = []
 
         self._matrix = np.array(matrix, ndmin=2)
+        self._label = label
 
     def get_matrix(self) -> np.ndarray:
         """Get managed matrix."""
         return self._matrix
+
+    def get_label(self) -> str:
+        """Get label."""
+        return self._label
 
     def get_mutator(self, index, modifier=None):
         """Returns a function which sets the `index` of the managed matrix to the

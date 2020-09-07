@@ -17,7 +17,6 @@ class Node:
         Function to merge this matrix with the previous matrix in the sequence.
 
     """
-
     def __init__(self, component, coalescer):
         """Construct an instance."""
         self._component = component

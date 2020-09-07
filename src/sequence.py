@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from src.componentmatrix import ComponentMatrix
@@ -9,8 +11,8 @@ class Sequence(ComponentMatrix):
     """Matrix sequence class.
 
     Manages a sequence of component matrices.
-    """
 
+    """
     def __init__(self):
         """Construct an instance."""
         self._nodes = []
@@ -24,11 +26,12 @@ class Sequence(ComponentMatrix):
         -------
         np.ndarray
             Coalesced matrix.
+
         """
         try:
             lhs = self._nodes[0].get_component().get_matrix()
         except IndexError:
-            raise ValueError("Sequence has no nodes to coalesce!")
+            raise ValueError("Sequence has no nodes!")
 
         for node in self._nodes[1:]:
             coalesce = node.get_coalescer()
@@ -36,6 +39,38 @@ class Sequence(ComponentMatrix):
             lhs = coalesce(lhs, rhs)
 
         return lhs
+
+    def get_label(self):
+        """Get string representation of node relationship."""
+        label = ""
+
+        enclosed = (len(self._nodes) > 1)
+        if enclosed:
+            label += "("
+
+        try:
+            lhs = self._nodes[0].get_component().get_label()
+            label += lhs
+        except IndexError:
+            raise ValueError("Sequence has no nodes!")
+
+        for node in self._nodes[1:]:
+            label += " → "
+            coalescer = node.get_coalescer()
+            if coalescer:
+                if coalescer.__name__ == "<lambda>":
+                    label += "lambda"
+                else:
+                    label += coalescer.__qualname__
+                label += " → "
+
+            rhs = node.get_component().get_label()
+            label += rhs
+
+        if enclosed:
+            label += ")"
+
+        return label
 
     def register_node(self, component, coalescer):
         """Register a node into the sequence.
@@ -64,5 +99,6 @@ class Sequence(ComponentMatrix):
         -------
         Node
             Node at index.
+
         """
         return self._nodes[index]

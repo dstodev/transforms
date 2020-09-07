@@ -90,7 +90,6 @@ class InteractiveSquare:
 
     ```
     """
-
     def __init__(self, axes, origin=None, scale=1, add_coords=None, style=None, convert_2d=None, label_vertices=False):
         """Construct an instance."""
         self._sequence = Sequence()
@@ -106,6 +105,8 @@ class InteractiveSquare:
             self._patch = patches.Polygon(self._square[:, :2], **style)
         else:
             self._patch = patches.Polygon(self._square[:, :2])
+
+        axes.add_patch(self._patch)
 
         self._labels = []
         if label_vertices:
@@ -166,7 +167,7 @@ class InteractiveSquare:
         """
         return self._patch
 
-    def register_transform(self, component, coalescer=None):
+    def register_transform(self, component, coalescer=None, label=None):
         """Register the transformation matrix as a component matrix.
 
         Parameters
@@ -189,7 +190,9 @@ class InteractiveSquare:
             coalescer = np.dot
 
         if not isinstance(component, Sequence):
-            component = MutableMatrix(component)
+            if label is None:
+                raise TypeError("Must provide `label` for MutableMatrix instantiation!")
+            component = MutableMatrix(label, component)
 
         self._sequence.register_node(component, coalescer)
         self._update_patch()
@@ -200,7 +203,7 @@ class InteractiveSquare:
         Parameters
         ----------
         index_of_component : typing.Union[int, typing.Tuple[int]]
-            Index of the matrix to select. Can be a series of indices to traverse into nested sequences.
+            Index of the matrix to select. Can be a tuple of indices to traverse into nested sequences.
 
         index_within_component : typing.Tuple[int]
             Index (R, C) of the value within the selected matrix.

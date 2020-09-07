@@ -91,15 +91,15 @@ def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[
     Parameters
     ----------
     matrix : np.ndarray
-        Transformation matrix
+        Transformation matrix.
 
     row_vector : bool, optional
-        `False` to treat points as column vectors, `True` to treat points as row vectors, by default False
+        `False` to treat points as column vectors, `True` to treat points as row vectors, by default False.
 
     Returns
     -------
     typing.Callable[[np.ndarray], None]
-        Function which takes points and transforms them in-place
+        Function which takes points and transforms them in-place.
 
     """
     if row_vector:
