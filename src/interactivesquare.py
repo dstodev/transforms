@@ -134,6 +134,10 @@ class InteractiveSquare:
         """
         return point[:, :2]
 
+    def get_label(self) -> str:
+        """Get string representation of component relationship."""
+        return self._sequence.get_label()
+
     def _update_patch(self):
         """Update the square patch given the current transform matrix."""
         try:

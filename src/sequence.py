@@ -1,5 +1,3 @@
-import logging
-
 import numpy as np
 
 from src.componentmatrix import ComponentMatrix
@@ -46,7 +44,7 @@ class Sequence(ComponentMatrix):
 
         enclosed = (len(self._nodes) > 1)
         if enclosed:
-            label += "("
+            label += "["
 
         try:
             lhs = self._nodes[0].get_component().get_label()
@@ -59,16 +57,16 @@ class Sequence(ComponentMatrix):
             coalescer = node.get_coalescer()
             if coalescer:
                 if coalescer.__name__ == "<lambda>":
-                    label += "lambda"
+                    label += "lambda()"
                 else:
-                    label += coalescer.__qualname__
+                    label += coalescer.__qualname__ + "()"
                 label += " → "
 
             rhs = node.get_component().get_label()
             label += rhs
 
         if enclosed:
-            label += ")"
+            label += "]"
 
         return label
 

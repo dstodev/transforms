@@ -35,7 +35,7 @@ def experiment():
 
     # Set up gray (baseline) patch
     origin = (0, 0)
-    gray = InteractiveSquare(axes, origin, style=style.gray)
+    InteractiveSquare(axes, origin, style=style.gray)
 
     # Set up green (interactive) patch
     K = np.array([  # Intrinsic parameter matrix
@@ -51,7 +51,7 @@ def experiment():
     B = np.array([[0, 0, 0, 1]], dtype=float)
 
     green = InteractiveSquare(axes, (0, 0), 1, style=style.green,
-        convert_2d=utility.from_homogenous, label_vertices=True)
+                              convert_2d=utility.from_homogenous, label_vertices=True)
 
     green.register_transform(K, label="K")
 
@@ -114,7 +114,7 @@ def experiment():
     slider_9 = widgets.Slider(pyplot.subplot(sliders[2, 1]), "Tz", -5, 5, 0, **style.darkgreen)
     green.register_slider((1, 3), (0, 2), slider_9)
 
-    logging.info(green._sequence.get_label())
+    logging.info(green.get_label())
 
     axes.relim()
     axes.autoscale_view()
