@@ -7,7 +7,9 @@ from src.sequence import Sequence
 
 
 class MockComponent(ComponentMatrix):
-    def __init__(self, matrix=None):
+    def __init__(self, label, matrix=None):
+        self._label = label
+
         if matrix is None:
             matrix = [[1, 0], [0, 1]]
 
@@ -15,6 +17,9 @@ class MockComponent(ComponentMatrix):
 
     def get_matrix(self):
         return self._matrix
+
+    def get_label(self):
+        return self._label
 
 
 class TestSequence(TestCase):
@@ -29,7 +34,7 @@ class TestSequence(TestCase):
     def test_get_node(self):
         uut = Sequence()
 
-        component = MockComponent()
+        component = MockComponent("T")
         coalescer = lambda: None
 
         uut.register_node(component, coalescer)
@@ -41,7 +46,7 @@ class TestSequence(TestCase):
     def test_register_node(self):
         uut = Sequence()
 
-        component = MockComponent()
+        component = MockComponent("T")
         coalescer = lambda: None
 
         uut.register_node(component, coalescer)
@@ -59,7 +64,7 @@ class TestSequence(TestCase):
     def test_get_matrix_one_element(self):
         uut = Sequence()
 
-        component = MockComponent()
+        component = MockComponent("T")
         coalescer = lambda: None
 
         uut.register_node(component, coalescer)
@@ -72,8 +77,8 @@ class TestSequence(TestCase):
     def test_get_matrix_two_elements(self):
         uut = Sequence()
 
-        uut.register_node(MockComponent(), None)
-        uut.register_node(MockComponent(), np.add)
+        uut.register_node(MockComponent("T1"), None)
+        uut.register_node(MockComponent("T2"), np.add)
 
         expected = [[2, 0], [0, 2]]
         actual = uut.get_matrix().tolist()
@@ -84,10 +89,10 @@ class TestSequence(TestCase):
         uut = Sequence()
 
         nested = Sequence()
-        nested.register_node(MockComponent(), None)
-        nested.register_node(MockComponent(), np.add)
+        nested.register_node(MockComponent("T1"), None)
+        nested.register_node(MockComponent("T2"), np.add)
 
-        uut.register_node(MockComponent([[3, 0], [0, 3]]), None)
+        uut.register_node(MockComponent("T3", [[3, 0], [0, 3]]), None)
         uut.register_node(nested, np.multiply)
 
         expected = [[6, 0], [0, 6]]

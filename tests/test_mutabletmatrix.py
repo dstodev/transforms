@@ -10,14 +10,14 @@ class TestMutableMatrix(TestCase):
     def test_instance(self):
         matrix = [[1, 0], [0, 1]]
 
-        uut = MutableMatrix(matrix)
+        uut = MutableMatrix("T", matrix)
 
         self.assertIsNotNone(uut)
 
     def test_get_matrix(self):
         matrix = [[1, 0], [0, 1]]
 
-        uut = MutableMatrix(matrix)
+        uut = MutableMatrix("T", matrix)
 
         actual = uut.get_matrix().tolist()
 
@@ -26,7 +26,7 @@ class TestMutableMatrix(TestCase):
     def test_get_mutator(self):
         matrix = [[1, 0], [0, 1]]
 
-        uut = MutableMatrix(matrix)
+        uut = MutableMatrix("T", matrix)
 
         mutator = uut.get_mutator((0, 0))
         mutator(2)
@@ -39,7 +39,7 @@ class TestMutableMatrix(TestCase):
     def test_get_mutator_with_modifier(self):
         matrix = [[1, 0], [0, 1]]
 
-        uut = MutableMatrix(matrix)
+        uut = MutableMatrix("T", matrix)
 
         mutator = uut.get_mutator((1, 1), lambda v: v + 1)
         mutator(2)

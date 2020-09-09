@@ -22,11 +22,12 @@ class MutableMatrix(ComponentMatrix):
     """
     def __init__(self, label, matrix=None):
         """Construct an instance."""
+        self._label = label
+
         if matrix is None:
             matrix = []
 
         self._matrix = np.array(matrix, ndmin=2)
-        self._label = label
 
     def get_matrix(self) -> np.ndarray:
         """Get managed matrix."""
