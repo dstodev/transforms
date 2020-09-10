@@ -15,7 +15,9 @@ from src.sequence import Sequence
 
 
 def experiment():
-    viewport_ratio = 4  # 3 rows/4 rows for viewport, 1 row/4 rows for sliders
+    # TODO: When is M^-1 =/= M^T?
+
+    viewport_ratio = 4  # 3/4 rows for viewport, 1/4 rows for sliders
     num_sliders = 6
 
     figure: pyplot.Figure = pyplot.figure()
@@ -50,7 +52,7 @@ def experiment():
     T = np.array([[0, 0, 0]], dtype=float)
     B = np.array([[0, 0, 0, 1]], dtype=float)
 
-    green = InteractiveSquare(axes, (0, 0), 1, style=style.green,
+    green = InteractiveSquare(axes, (0, 0), 1, (0, 1), style=style.green,
                               convert_2d=utility.from_homogenous, label_vertices=True)
 
     green.register_transform(K, label="K")
@@ -111,7 +113,7 @@ def experiment():
     green.register_slider((1, 3), (0, 1), slider_8)
 
     # World origin z component
-    slider_9 = widgets.Slider(pyplot.subplot(sliders[2, 1]), "Tz", -5, 5, 0, **style.darkgreen)
+    slider_9 = widgets.Slider(pyplot.subplot(sliders[2, 1]), "Tz", -5, 5, 1, **style.darkgreen)
     green.register_slider((1, 3), (0, 2), slider_9)
 
     logging.info(green.get_label())

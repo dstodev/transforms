@@ -131,6 +131,7 @@ class InteractiveSquare:
         -------
         np.ndarray
             2D point vector.
+
         """
         return point[:, :2]
 
@@ -168,6 +169,7 @@ class InteractiveSquare:
         -------
         patches.Polygon
             Patch for the square.
+
         """
         return self._patch
 
@@ -199,7 +201,6 @@ class InteractiveSquare:
             component = MutableMatrix(label, component)
 
         self._sequence.register_node(component, coalescer)
-        self._update_patch()
 
     def register_slider(self, index_of_component, index_within_component, slider, modifier=None):
         """Register a slider to control the value of matrix `order` at `index`
@@ -218,6 +219,7 @@ class InteractiveSquare:
         modifier : typing.Callable[[int], int], optional
             Callable function to mutate the slider value, by default None.
             e.g. to convert the slider value from degrees to radians.
+
         """
         if isinstance(index_of_component, int):
             index_of_component = (index_of_component,)
