@@ -17,6 +17,8 @@ from src.sequence import Sequence
 def experiment():
     # TODO: When is M^-1 =/= M^T?
 
+    # TODO: Calculate distance from the camera at every pixel, and tint pixel to be lighter the farther it is from the camera.
+
     viewport_ratio = 4  # 3/4 rows for viewport, 1/4 rows for sliders
     num_sliders = 6
 
@@ -24,7 +26,7 @@ def experiment():
     grid: pyplot.GridSpec = gridspec.GridSpec(viewport_ratio, 1, figure=figure)
     axes: pyplot.Axes = pyplot.subplot(grid[:viewport_ratio - 1, :])
 
-    sliders = gridspec.GridSpecFromSubplotSpec(num_sliders, 2, grid[-1, :], wspace=0.30)
+    sliders = gridspec.GridSpecFromSubplotSpec(num_sliders, 2, grid[-1, :], wspace=0.4)
 
     # Configure style
     axes.axis("equal")

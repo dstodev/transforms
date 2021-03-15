@@ -110,15 +110,7 @@ def transform(matrix: np.ndarray, row_vector: bool = False) -> typing.Callable[[
 
     def func(point: np.ndarray):
         point_rows = point.shape[0]
-
-        # if point has fewer rows than matrix columns, pad point column with rows containing 1
-        delta = matrix.shape[1] - point_rows
-        if delta > 0:
-            coordinate = np.pad(point, (0, delta), constant_values=1)
-        else:
-            coordinate = point
-
-        coordinate = np.dot(matrix, coordinate)[:point_rows]
+        coordinate = np.dot(matrix, point)[:point_rows]
         return coordinate
 
     return func

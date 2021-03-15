@@ -116,7 +116,6 @@ class InteractiveSquare:
                 self._labels.append(text)
 
         self._update_index = 0
-        self._update_patch()
 
     @staticmethod
     def _first_two_coordinates(point):
@@ -141,22 +140,22 @@ class InteractiveSquare:
 
     def _update_patch(self):
         """Update the square patch given the current transform matrix."""
+        transform = self._sequence.get_matrix()
+
         try:
-            transform = self._sequence.get_matrix()
             points = utility.apply_transform(transform, self._square)
-
-            if points.shape[1] > 2:
-                points = self._convert_2d(points)
-
-            self._patch.set_xy(points)
-            if self._labels:
-                for label, (x, y) in zip(self._labels, points):
-                    label.set_x(x)
-                    label.set_y(y)
-
         except ValueError:
-            # Instance does not have data to update the patch with.
-            pass
+            # Could not apply transform to the square; point size misalignment?
+            raise
+
+        if points.shape[1] > 2:
+            points = self._convert_2d(points)
+
+        self._patch.set_xy(points)
+        if self._labels:
+            for label, (x, y) in zip(self._labels, points):
+                label.set_x(x)
+                label.set_y(y)
 
     def _update(self, _):
         """Callback function for slider.on_changed() that discards the given parameter."""
